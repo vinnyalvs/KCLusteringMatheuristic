@@ -189,9 +189,10 @@ int Constructive::findMean(unsigned int id) {
 	int chosed = rand() % 99;
 	int count = 0;
 	double minDist = numeric_limits<double>::max();
-	double minDist2;
+	double minDist2=0;
 	for (auto mean : means) {
 		double dist = distances[id - 1][mean.id - 1];
+	
 		if (minDist > dist) {
 			minDist2 = minDist;
 			mean2 = mean1;

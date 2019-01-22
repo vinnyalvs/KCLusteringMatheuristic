@@ -1,0 +1,7 @@
+http://archive.ics.uci.edu/ml/datasets/Wine+Quality?ref=datanews.io
+https://archive.ics.uci.edu/ml/datasets/wine
+https://archive.ics.uci.edu/ml/datasets/glass+identification
+
+
+http://archive.ics.uci.edu/ml/datasets/thyroid+disease
+https://archive.ics.uci.edu/ml/datasets/Yeast

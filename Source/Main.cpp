@@ -16,7 +16,7 @@ int main(int   argc, char *argv[]) {
 
 
 	clock_t tInicio, tFim, tDecorrido;
-	const int numSolutions = 5000;
+	const int numSolutions = 2000;
 
 	int seeds[5] = { 13,17,19,23,29 };
 
@@ -25,8 +25,8 @@ int main(int   argc, char *argv[]) {
 
 	int type; // 1  float , 2  Int		  
 
-	string strings[1] = { "C:/Users/vinic/Desktop/wine1.csv" };
-	//string strings[1] = { "Instancias/DS2/DS2-300p3c.csv" };
+	//string strings[1] = { "C:/Users/vinic/Desktop/wine1.csv" };
+	string strings[1] = { "C:/Users/HAL/Documents/GitHub/GeneticKClustering/KClustering/Instancias/DS2/DS2-300p3c.csv" };
 
 
 
@@ -50,8 +50,8 @@ int main(int   argc, char *argv[]) {
 		type = types[0];
 
 		i->setType(type);
-		i->readWineInput();
-		//i->readObjectInstances();
+		//i->readWineInput();
+		i->readObjectInstances();
 		i->normEntry();
 		i->buildGraph();
 
