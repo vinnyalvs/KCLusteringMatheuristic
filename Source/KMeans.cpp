@@ -82,7 +82,7 @@ void KMeans::buildClusters() {
 		}
 	
 	}
-	newSol->calculateSilhouette();
+	newSol->calculateSilhouette2();
 	int count = 0;
 	if (newSol->getSilhouette() > solution->getSilhouette() && newSol->checkViability()) {
 		newSol->copySolution(solution);

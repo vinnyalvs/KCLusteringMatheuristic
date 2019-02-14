@@ -17,6 +17,7 @@ ShortSolution::ShortSolution(int numObj, int numClusters)
 	intraCosts.assign(numClusters, 0.0);
 	externalCosts.assign(numClusters, 0.0);
 
+	isConsistent = false;
 
 
 	for (size_t i = 0; i < clusters.size(); i++) {
@@ -47,11 +48,17 @@ void ShortSolution::showSolution()
 
 ShortSolution::~ShortSolution()
 {
-	for (auto o : *objects) {
-		delete o;
+	/*for (int i = 0; i < objects->size(); ++i) {
+		delete objects->at(i);
 	}
+	delete objects;*/
+	
+/*	for (int i = 0; i < numObj; i++) {
+		delete distances[i];
+	}
+	delete []distances;*/
 
-	delete objects;
+
 
 
 }
@@ -60,8 +67,7 @@ void ShortSolution::addObject(int objectId, int clusterId)
 {
 
 	clusters[clusterId].push_back(objectId);
-	//objectByCluster[objectId-1] = clusterId;
-
+	isConsistent = false;
 
 }
 
@@ -176,9 +182,9 @@ void ShortSolution::calculateCostClusters()
 {
 
 
-	//newCalculateIntraCosts();
+	newCalculateIntraCosts();
 
-	calculateIntraCosts();
+	//calculateIntraCosts();
 
 	calculateExternalCosts();
 
@@ -265,183 +271,167 @@ double ShortSolution::getCost() {
 
 }
 
-
+//Refazer silhuetta para não usar objectByCluster
 void ShortSolution::calculateSilhouette2() {
+
 	vector <double> silhouettes;
 	double max;
-	for (int n = 1; n <= numObj; n++) {
-		int clusterObj = objectByCluster[n - 1];
-		//dissimilaridade1
-		double a = 0;
-		if (clusters[clusterObj].size() == 1)
-			a = 0;
-		else {
-			double sumDists = 0.0;
-			for (int i = 0; i < clusters[clusterObj].size(); i++) {
-				if ((i + 1) != n)
-					sumDists += distances[clusters[clusterObj][i] - 1][n - 1];
-					
+	if(!isConsistent) {
+		for (int n = 1; n <= numObj; n++) {
+			int clusterObj = objectByCluster[n - 1];
+			//dissimilaridade1
+			double a = 0;
+			if (clusters[clusterObj].size() == 1)
+				a = 0;
+			else {
+				double sumDists = 0.0;
+				for (int i = 0; i < clusters[clusterObj].size(); i++) {
+					if ((i + 1) != n)
+						sumDists += distances[clusters[clusterObj][i] - 1][n - 1];
+
+				}
+				a = sumDists / (float)(clusters[clusterObj].size() - 1);
 			}
-			a = sumDists / (float)(clusters[clusterObj].size() - 1);
-		}
-		//dissimilaridade2
-		double b = 0;
-		int closestCluster = 0;
-		double minDist = std::numeric_limits<double>::max();
-		for (int i = 1; i <= numObj; i++) {
-			double d = 0;
-			if (n != i) {
-				d = distances[n - 1][i - 1];
-				if (d < minDist && objectByCluster[i - 1] != clusterObj) {
-					minDist = d;
-					closestCluster = objectByCluster[i - 1];
+			//dissimilaridade2
+			double b = 0;
+			int closestCluster = 0;
+			double minDist = std::numeric_limits<double>::max();
+			for (int i = 1; i <= numObj; i++) {
+				double d = 0;
+				if (n != i) {
+					d = distances[n - 1][i - 1];
+					if (d < minDist && objectByCluster[i - 1] != clusterObj) {
+						minDist = d;
+						closestCluster = objectByCluster[i - 1];
+					}
 				}
 			}
-		}
 
-		if (clusters[closestCluster].size() == 1)
-			b = 0;
-		else {
-			double sumDists = 0.0;
-			for (int i = 0; i < clusters[closestCluster].size(); i++) {
+			if (clusters[closestCluster].size() == 1)
+				b = 0;
+			else {
+				double sumDists = 0.0;
+				for (int i = 0; i < clusters[closestCluster].size(); i++) {
 
-				if (i != n) {
-					sumDists += distances[clusters[closestCluster][i] - 1][n - 1];
+					if (i != n) {
+						sumDists += distances[clusters[closestCluster][i] - 1][n - 1];
+					}
 				}
+				b = sumDists / (float)clusters[closestCluster].size();
 			}
-			b = sumDists / (float)clusters[closestCluster].size();
-		}
-		if (a > b)
-			max = a;
-		else
-			max = b;
+			if (a > b)
+				max = a;
+			else
+				max = b;
 
-		double s;
-		if (max > 0 || max < 0) {
-			s = (b - a) / (max);
-		}
-		else
-			s = 0;
+			double s;
+			if (max > 0 || max < 0) {
+				s = (b - a) / (max);
+			}
+			else
+				s = 0;
 
-		silhouettes.push_back(s);
+			silhouettes.push_back(s);
+
+		}
+
+		double sum = 0.0;
+
+		for (vector <double>::iterator it = silhouettes.begin(); it != silhouettes.end(); it++) {
+			sum += *it;
+		}
+
+		Silhouette = sum / numObj;
+		//calculateCostClusters();
+		//Silhouette = getCost();
+}
+
+	isConsistent = true;
+}
+
+// ATENÇÃO: OBJID JA É O VALOR DO INDEX, NÃO É NECESSÁRIO USAR -1
+double ShortSolution::calculateDissimilarityOne(int objId,int clusterId) {
+	double a;
+	double sumDists = 0.0;
+
+	for (int i = 0; i < clusters[clusterId].size(); i++) {
+		if (i  != objId)
+			sumDists += distances[clusters[clusterId][i]-1][objId];
 
 	}
+	a = sumDists / (float)(clusters[clusterId].size() - 1);
 
-	double sum = 0.0;
-
-	for (vector <double>::iterator it = silhouettes.begin(); it != silhouettes.end(); it++) {
-		sum += *it;
-	}
-
-	Silhouette = sum / numObj;
-
+	// retorna a soma das distancia do objeto para a lista de objetos.
+	return a;
 }
 
 
-void ShortSolution::calculateSilhouette() {
-
-	vector <double> silhouettes;
-	double max;
-
-
-
-	for (int n = 1; n <= numObj; n++) {
-
-		int clusterObj = objectByCluster[n - 1];
-
-
-		//dissimilaridade1
-		double a=0;
-		if (clusters[clusterObj].size() == 1)
-			a = 0;
-		else {
-			//float m = ((float)1 / (float)(clusters[clusterObj].size()-1));
-
-			double sumDists = 0.0;
-			for (int i = 0; i < clusters[clusterObj].size(); i++) {
-				if((i+1)!=n)
-					sumDists += euclideanDistance(objects->at(clusters[clusterObj][i] - 1), objects->at(n-1)); 
-			}
-			a = sumDists/(float)(clusters[clusterObj].size()-1);
-			//cout << "dist" << sumDists << endl;
+double ShortSolution::calculateDissimilarityTwo(int objId, int clusterId) {
+	double b = 0.0;
+	double sumDists = 0.0;
+	for (int i = 0; i < clusters[clusterId].size(); i++) {
+		if (i != objId) {
+			sumDists += distances[clusters[clusterId][i]-1][objId];
 		}
+	}
+	b = sumDists / (float)clusters[clusterId].size();
+	return b;
+}
 
-		
+void ShortSolution::calculateSilhouette3() {
+	int objetos_errados = 0; //conta objetos errados.
+	double mediaSilhueta=0.0;//guarda a media da silhueta
+	int i,j;
+	for(i=0; i<numObj; i++) //varre cada objeto
+	{
+		double dissimilarityOne =0.0;//a(i)
+		double dissimilarityTwo =0.0;//b(i)
 
-		//dissimilaridade2
-		double b=0;
-		int closestCluster = 0;
-		double minDist = std::numeric_limits<double>::max();
-		for (int i = 1; i <= numObj; i++) {
-			double d = 0;
-			if (n != i) {
-				d = euclideanDistance(objects->at(n-1), objects->at(i-1));
-				if (d < minDist && objectByCluster[i - 1] != clusterObj) {
-					minDist = d;
-					closestCluster = objectByCluster[i - 1];
+		if (clusters[objectByCluster[i]].size() > 1) //se tem mais de um elemento no cluster{
+			dissimilarityOne = calculateDissimilarityOne(i,objectByCluster[i]);//a(i)
+		else
+			dissimilarityOne = 0;
+
+		int closestCluster = -1;
+		dissimilarityTwo = numeric_limits<double>::max();
+		for(j=0; j<numClusters; j++) {  //calcula dissimilaridade entre todos os outros clusters diferentes deste e escolhe a menor
+			if (j != objectByCluster[i]) {
+				double auxDouble = calculateDissimilarityTwo(i, j);
+				if (auxDouble < dissimilarityTwo) {
+					dissimilarityTwo = auxDouble; //seleciona menor dissimilaridade e coloca em b(i)
+					closestCluster = j;
 				}
 			}
 		}
 
-		//cout << "b 1 " << endl;
+	/*listaObjetos[i]->afinidade_cluster_atual = dissimilaridade1;
+	listaObjetos[i]->afinidade_cluster_mais_prox = dissimilaridade2;
+	listaObjetos[i]->id_cluster_desejado = listaObjetos[i]->id_cluster;
+	listaObjetos[i]->closestCluster = closestCluster; */
 
-		if (clusters[closestCluster].size() == 1)
-			b = 0;
-		else {
-			double m = ((float)1 / (float)clusters[closestCluster].size());
-
-			double sumDists = 0.0;
-			
-			
-			for (int i = 0; i < clusters[closestCluster].size(); i++) {
-
-				if (i != n) {
-					sumDists += euclideanDistance(objects->at(clusters[closestCluster][i] - 1), objects->at(n - 1));
-				}
+	double denominador = (dissimilarityOne > dissimilarityTwo) ? dissimilarityOne : dissimilarityTwo;
+	double silhueta;
+	if (denominador != 0)
+		silhueta = (dissimilarityTwo - dissimilarityOne) / denominador;
+	else
+		silhueta = 0;
 	
-			}
-			
-			
-			b = sumDists / (float)clusters[closestCluster].size();
-		}
-			//cout << "b 2 " << endl;
+	/*
+	if(dissimilaridade2 < dissimilaridade1) // esta mais bem posicionado no cluster mais proximo.
+	{
+	(*objetos_errados) = (*objetos_errados) + 1;
+	listaObjetos[i] ->id_cluster_desejado = closestCluster ;
+	} */
 
+	mediaSilhueta += silhueta;//somatorio de s(i)
 
-		//	cout << "b 3 " << endl;
-
-
-		//cout << a << endl;
-		//cout << b << endl;
-		//cout << "checar se max(a,b)" << endl;
-		if (a > b)
-			max = a;
-		else
-			max = b;
-
-
-		double s;
-		if (max > 0 || max < 0) {
-			s = (b - a) / (max);
-		}
-		else
-			s = 0;
-
-		//cout << "max" << endl;
-
-		silhouettes.push_back(s);
-
-	//	cout << silhouettes[n-1] << endl;
 	}
-
-	double sum = 0.0;
-
-	for (vector <double>::iterator it = silhouettes.begin(); it != silhouettes.end(); it++) {
-		sum += *it;
-	}
-
-	Silhouette = sum / numObj;
-
+	Silhouette = mediaSilhueta/numObj;
+	//    printf("Tem %d objetos no cluster errado\nValor Fitness: %f.\n", *objetos_errados, mediaSilhueta);
 }
+
+
+
 
 double ShortSolution::getSilhouette()
 {
@@ -479,6 +469,7 @@ void ShortSolution::updateClusters()
 		}
 
 		updateAllClusters();
+		isConsistent = false;
 }
 
 int ShortSolution::findNearestMean(struct mean m1, vector <struct mean> *m2) {
@@ -496,6 +487,34 @@ int ShortSolution::findNearestMean(struct mean m1, vector <struct mean> *m2) {
 	return index;
 }
 
+void ShortSolution::tradeCluster(int id, int orgMean)
+{
+	//Removendo obj do cluster original
+	vector <int>::iterator j;
+	for (j = clusters[orgMean].begin(); j != clusters[orgMean].end();) {
+		if (id == (*j)) {
+			j = clusters[orgMean].erase(j);
+			break;
+		}
+		else
+			j++;
+
+	}
+	//Add obj nos clusters
+	vector <Object*> ::iterator it;
+	it = objects->begin();
+	while (it != objects->end()) {
+		if ((*it)->getId() == id) {
+			int mean = findNearestMean((*it));
+			updateObjectCluster((*it)->getId(), mean);
+			addObject((*it)->getId(), mean);
+			break;
+		}	
+		++it;
+	}
+
+}
+
 int ShortSolution::findNearestMean(Object *obj)
 {
 	// O(n)
@@ -505,6 +524,23 @@ int ShortSolution::findNearestMean(Object *obj)
 	for (auto m : *means) {
 		double dist = euclideanDistance(&obj->getNormDoubleAttrs(), &m.attrs);
 		if (minDist > dist) {
+			minDist = dist;
+			index = count;
+		}
+		count++;
+	}
+	return index;
+}
+
+int ShortSolution::findNearestMean(Object * obj, int orgMean)
+{
+	// O(n)
+	int index = 0;
+	int count = 0;
+	double minDist = numeric_limits<double>::max();
+	for (auto m : *means) {
+		double dist = euclideanDistance(&obj->getNormDoubleAttrs(), &m.attrs);
+		if (minDist > dist && count != orgMean) {
 			minDist = dist;
 			index = count;
 		}
@@ -539,6 +575,7 @@ void ShortSolution::updateObjectCluster(int objectId, int clusterId) {
 	
 
 	objectByCluster[objectId - 1] = clusterId;
+	isConsistent = false;
 	
 }
 
@@ -561,13 +598,20 @@ void ShortSolution::updateAllClusters() {
 
 bool ShortSolution::checkViability() {
 
-	
+	int num = 0;
 	for (auto c : clusters) {
+		num += c.size();
 		if (c.empty())
 			return false;
 	}
+	if (num != numObj) {
+		return false;
+	}
 
+
+	
 	return true;
+	
 	
 
 }

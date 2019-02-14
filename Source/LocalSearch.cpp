@@ -1,5 +1,5 @@
-
-#include "../Headers/LocalSearch.h"
+#include "stdafx.h"
+#include "LocalSearch.h"
 
 
 

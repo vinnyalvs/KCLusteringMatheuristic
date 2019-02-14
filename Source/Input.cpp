@@ -244,7 +244,7 @@ int Input::getMaxNormIntAttr(int index)
 
 double Input::getMinDoubleAttr(int index)
 {
-	cout << index << endl;
+
 	double minAttr = objects->at(0)->getOrigDoubleAttr(index);
 	vector <Object*>::iterator it;
 	for (it = objects->begin(); it != objects->end(); ++it) {
@@ -353,6 +353,7 @@ void Input::buildGraph()
 		for (int j = 0; j < numObjs; j++) {
 			if (i != j) {
 				distances[i][j] = euclideanDistance(objects->at(i), objects->at(j));
+			//	cout << distances[i][j] << endl;
 			}
 			else
 				distances[i][j] = 0;

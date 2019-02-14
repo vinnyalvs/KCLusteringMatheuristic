@@ -67,7 +67,12 @@ public:
 
 	void calculateSilhouette2();
 
-	void calculateSilhouette();
+	double calculateDissimilarityOne(int objId, int clusterId);
+
+	double calculateDissimilarityTwo(int objId, int clusterId);
+
+	void calculateSilhouette3();
+
 
 	double getSilhouette();
 
@@ -78,6 +83,7 @@ public:
 	void copySolution(ShortSolution * newSol);
 
 	int findNearestMean(Object * obj);
+	int findNearestMean(Object * obj, int orgMean); //Acha o mais próximo EXCETO o org mean
 
 	double euclideanDistance(vector<double>* attrA, vector<double>* attrB);
 
@@ -104,6 +110,9 @@ public:
 
 		return false;
 	}
+
+
+
 	vector <vector<int>> clusters;
 	vector <int> objectByCluster; // for each object i have the clusters which it belongs
 
@@ -113,6 +122,10 @@ public:
 	double Silhouette;
 
 	int numAttr;
+
+	void tradeCluster(int id, int orgMean);
+
+	bool isConsistent;
 private:
 	
 	
