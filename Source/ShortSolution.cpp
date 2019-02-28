@@ -381,6 +381,7 @@ double ShortSolution::getSilhouette()
 
 
 void ShortSolution::copySolution(ShortSolution *newSol) {
+//	newSol->qqu = qqu;
 	newSol->dunnIndex = dunnIndex;
 	newSol->dbIndex = dbIndex;
 	newSol->Silhouette = Silhouette;
@@ -507,7 +508,7 @@ double ShortSolution::calculateClusterDispersion(int clusterID)
 
 double ShortSolution::calculateClusterDistance(int clusterOne, int clusterTwo)
 {
-	return euclideanDistance(&means->at(clusterOne).attrs, &means->at(clusterTwo).attrs);
+	return euclideanDistance(&means[clusterOne].attrs, &means[clusterTwo].attrs);
 }
 
 
@@ -560,7 +561,7 @@ int ShortSolution::findNearestMean(Object *obj)
 	int index = 0;
 	int count = 0;
 	double minDist = numeric_limits<double>::max();
-	for (auto m : *means) {
+	for (auto m : means) {
 		double dist = euclideanDistance(&obj->getNormDoubleAttrs(), &m.attrs);
 		if (minDist > dist) {
 			minDist = dist;
@@ -577,7 +578,7 @@ int ShortSolution::findNearestMean(Object * obj, int orgMean)
 	int index = 0;
 	int count = 0;
 	double minDist = numeric_limits<double>::max();
-	for (auto m : *means) {
+	for (auto m : means) {
 		double dist = euclideanDistance(&obj->getNormDoubleAttrs(), &m.attrs);
 		if (minDist > dist && count != orgMean) {
 			minDist = dist;

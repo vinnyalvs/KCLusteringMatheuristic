@@ -138,7 +138,7 @@ void Utils::ShowSolution(ShortSolution * solution,string fileName , double s)
 	a << "# " << s << endl;
 	vector <double> costClusters;
 	vector <vector<int>> clusters = solution->getClusters();
-	vector <mean> *centers = solution->means;
+	vector <mean> centers = solution->means;
 	vector <Object*> graph = *solution->getObjects();
 	costClusters.assign(clusters.size(), 0);
 

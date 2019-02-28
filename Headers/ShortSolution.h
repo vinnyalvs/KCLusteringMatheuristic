@@ -9,8 +9,9 @@ using namespace std;
 class ShortSolution
 {
 public:
+	char qqu;
 	bool chegueiLa;
-
+	
 	ShortSolution();
 	ShortSolution(int numObj, int numClusters);
 	void showSolution();
@@ -95,7 +96,7 @@ public:
 
 	bool checkViability();
 
-	vector <struct mean> *means;
+	vector <struct mean> means;
 
 
 	void updateClusters();

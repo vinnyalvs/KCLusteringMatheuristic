@@ -21,7 +21,7 @@ private:
 	void eliminate(int posIni, double rate, vector<ShortSolution*>* solutions);
 	int roulette();
 	void newRndPop(vector<ShortSolution*>* solutions, int numSolutions);
-	int findNearestMean(mean m1, vector<struct mean>* m2);
+	int findNearestMean(mean m1, vector<struct mean> m2);
 	int findNearestMean(mean m1, vector<struct mean>* m2, int *aux);
 	void rankPopulation(vector<ShortSolution*>* solutions);
 	void calcRelFitness(vector<ShortSolution*>* solutions);
@@ -60,5 +60,7 @@ public:
 
 	
 	double getValueBestSolution();
+
+	ShortSolution *MySol;
 };
 

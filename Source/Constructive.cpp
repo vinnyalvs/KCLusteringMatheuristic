@@ -178,7 +178,7 @@ void Constructive::meansClustering()
 	}
 	solution->distances = distances;
 	solution->setObjectByCluster(objByCluster);
-	solution->means = &means;
+	solution->means = means;
 	double mediaN = 0;
 	double media = 0;
 
@@ -190,7 +190,7 @@ void Constructive::meansClustering()
 				media += objects->at(id - 1)->getNormDoubleAttr(n);
 			}
 			mediaN = media / solution->clusters[i].size();
-			solution->means->at(i).attrs[n] = mediaN;
+			solution->means[i].attrs[n] = mediaN;
 		}
 	} 
 
