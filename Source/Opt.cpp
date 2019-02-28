@@ -1,7 +1,7 @@
 
 #include "../Headers/Opt.h"
 #include "../Headers/OptCplex.h"
-//#include "../Headers/OptGurobi.h"
+#include "../Headers/OptGurobi.h"
 #include <iostream>
 #include "../Headers/Input.h"
 

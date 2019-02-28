@@ -3,7 +3,6 @@
 #include "Object.h";
 #include "Constructive.h"
 #include "ShortSolution.h"
-#include "KMeans.h"
 #include <cstdlib> 
 #include <limits>
 #include <utility>

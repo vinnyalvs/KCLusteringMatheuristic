@@ -7,12 +7,12 @@ Environment::Environment(int solver)
 	if (solver == 1) {
 		this->cplexEnv = new IloEnv();
 		this->mdlCplex = new CplexModel("CplexModel",*cplexEnv);
-//		this->mdlGRB = NULL;
-//		this->grbEnv = NULL;
+		this->mdlGRB = NULL;
+		this->grbEnv = NULL;
 	}
 	else if (solver == -1) {
-//		this->grbEnv = new GRBEnv();
-//		this->mdlGRB = new GurobiModel("GRBModel", *grbEnv);
+		this->grbEnv = new GRBEnv();
+		this->mdlGRB = new GurobiModel("GRBModel", *grbEnv);
 		this->cplexEnv = NULL;
 		this->mdlCplex = NULL;
 	}
@@ -20,20 +20,20 @@ Environment::Environment(int solver)
 	cout << "alo" << endl;
 }
 
-/*GRBEnv * Environment::getGRBEnv()
+GRBEnv * Environment::getGRBEnv()
 {
 	return this->grbEnv;
-}*/
+}
 
 IloEnv * Environment::getCplexEnv()
 {
 	return this->cplexEnv;
 }
 
-/*GurobiModel * Environment::getMdlGRB()
+GurobiModel * Environment::getMdlGRB()
 {
 	return this->mdlGRB;
-}*/
+}
 
 CplexModel * Environment::getMdlCplex()
 {
@@ -47,10 +47,10 @@ void Environment::setCplexEnv(IloEnv  *cplexEnv)
 
 
 
-/*void Environment::setGrbEnv(GRBEnv * grbEnv)
+void Environment::setGrbEnv(GRBEnv * grbEnv)
 {
 	this->grbEnv = grbEnv;
-}*/
+}
 
 void Environment::setSolver(int solver)
 {

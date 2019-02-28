@@ -1,7 +1,8 @@
 #pragma once
-#include <iostream>
 #include <string>
+#include <iostream>
 #include <vector>
+
 using namespace std;
 //!Super Class of OptGurobi and OptCplex . 
 /*!
@@ -38,7 +39,6 @@ public:
 class Model {
 private:
 public:
-
 	 Model();
 	 ~Model();
 

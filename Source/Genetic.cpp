@@ -117,8 +117,8 @@ void Genetic::crossover(ShortSolution * sol1, ShortSolution * sol2, ShortSolutio
 				  int id = newSol2->clusters[i][j];
 				  media += objects->at(id-1)->getNormDoubleAttr(n);
 			  }
-			  mediaN = media / newSol1->clusters[i].size();
-			  newSol1->means->at(i).attrs[n] = mediaN;
+			  mediaN = media / newSol2->clusters[i].size();
+			  newSol2->means->at(i).attrs[n] = mediaN;
            
 
 		  }
@@ -194,9 +194,9 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 			int a = (rand() % 100);
 			if (a <= crossoverRate) {
 				crossover(sols->at(rand1), sols->at(rand2), s, s2);
-				int mutationR = rand() % 100;
+			 	int mutationR = rand() % 100; 
 				if (mutationR <= mutationRate)
-					mutation(s);
+					mutation(s); 
 				//Checando se após a mutação houve um aborto espontâneo
 				if (s->checkViability()) {
 					newPopulation->push_back(s);
@@ -206,7 +206,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 					kc++;
 				mutationR = rand() % 100;
 				if (mutationR <= mutationRate)
-					mutation(s2);
+					mutation(s2); 
 				if (s2->checkViability()) {
 					newPopulation->push_back(s2);
 					crossCount2++;
@@ -226,7 +226,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 				newC++;
 			}
 			else {
-				delete sols->at(s);
+			//	delete sols->at(s);
 			}
 
 			
@@ -237,7 +237,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 		sols->clear();
 		vector<ShortSolution*>().swap(*sols);
 
-		cout << "Tempo Cross: " << kc << endl;
+
 
 		// Mutação, tem chance de ocorrer com qualquer indíviduo do cruzamento
 	/*	tInicio2 = clock();
@@ -411,7 +411,7 @@ Genetic::Genetic(vector<ShortSolution*>* sols, int maxIterations, vector <ShortS
 			}
 		}
 
-		cout << "Elminados" << kb << endl;
+		
 
 		//Pegando 10% melhores
 		int newC = 0;
@@ -530,33 +530,35 @@ void Genetic::mutation(ShortSolution * sol1)
 
 
 	sol1->calculateCostClusters();
-	vector <double> dispersion = sol1->getCostClusters(); 
+	vector <double> dispersion = sol1->getCostClusters();
 	vector <double> orgDispersion = sol1->getCostClusters();
 	sort(dispersion.begin(), dispersion.end());
 	double sum = 0, aux = 0;
 	double relFitness = 0;
 	int cut = (ceil)(dispersion.size() * 0.4);
 	int selDispersedCluster = rand() % cut;
-
-	int count = 0;
+	//cout << cut << endl;
+	//cout << dispersion.size() << endl;
+	int count = -1;
 	for (auto f : orgDispersion) {
+		count++;
 		if (dispersion[selDispersedCluster] == f) {
 			break;
 		}
-		count++;
 	}
+	//cout << selDispersedCluster << endl;
 
 	vector <int> selCluster = sol1->clusters[count];
 	double maxDist = numeric_limits<double>::min();
 	int mostDistObj;
 	for (auto obj : selCluster) {
-		vector <double> attr = objects->at(obj-1)->getNormDoubleAttrs();
+		vector <double> attr = objects->at(obj - 1)->getNormDoubleAttrs();
 		double dist = euclideanDistance(&attr, &sol1->means->at(count).attrs);
 		if (dist > maxDist) {
 			mostDistObj = obj;
 		}
 	}
-
+	//system("cls");
 	//int newMean = sol1->findNearestMean(objects->at(mostDistObj));
 
 	sol1->tradeCluster(mostDistObj, count);
@@ -564,7 +566,7 @@ void Genetic::mutation(ShortSolution * sol1)
 
 	//int id = sol1->clusters[count];
 
-	
+
 
 }
 
@@ -642,14 +644,6 @@ double Genetic::euclideanDistance(vector <double> *attrA, vector <double> *attrB
 
 	return sqrt(dist);
 
-
-}
-
-void Genetic::refine(ShortSolution *newSol) {
-	KMeans *alg = new KMeans(newSol->getNumClusters(), 3, newSol->getObjects(),numAttr);
-	alg->readSolution(newSol);
-	alg->buildClusters();
-	delete alg;
 
 }
 

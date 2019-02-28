@@ -1,4 +1,3 @@
-
 #include "../Headers/OptCplex.h"
 
 /**
@@ -23,7 +22,6 @@ CplexModel::CplexModel(const char *name, IloEnv env)
 		numVars = 0;
 		numConstraints = 0;
 	} catch (IloException& ex){
-		
 		cerr << "Error: " << ex << endl;
 	}
 }

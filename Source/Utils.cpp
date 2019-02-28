@@ -5,19 +5,6 @@
 Utils::Utils()
 {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
 Utils::Utils(string fileName) {
@@ -135,7 +122,7 @@ void Utils::ShowSolution(ShortSolution * solution)
 
 }
 
-void Utils::ShowSolution(ShortSolution * solution,string fileName)
+void Utils::ShowSolution(ShortSolution * solution,string fileName , double s)
 {
 	fstream a;
 	a.open(fileName, fstream::out);
@@ -148,6 +135,7 @@ void Utils::ShowSolution(ShortSolution * solution,string fileName)
 
 	a << "plt.figure(figsize=(10,10))\n";
 
+	a << "# " << s << endl;
 	vector <double> costClusters;
 	vector <vector<int>> clusters = solution->getClusters();
 	vector <mean> *centers = solution->means;
@@ -161,9 +149,9 @@ void Utils::ShowSolution(ShortSolution * solution,string fileName)
 		}
 	}
 
-	for (size_t i = 0; i < centers->size(); i++) {
+	/*for (size_t i = 0; i < centers->size(); i++) {
 //		a << "plt.plot(" << centers->at(i).x << "," << centers->at(i).y  << "," << "'*'" << ",markersize=15," << "color='" << colorTable(0) << "')" << "\n" << endl;
-	}
+	}*/
 
 
 	a << "plt.show()\n";
@@ -212,6 +200,29 @@ void Utils::printEdges(ShortSolution * solution)
 	}
 	
 	a << "plt.show()\n";
+	a.close();
+
+
+
+}
+
+
+void Utils::writeSolution(ShortSolution *solution)
+{
+	fstream a;
+	a.open("sol.csv", fstream::out);
+
+	vector <vector<int>> clusters = solution->getClusters();
+	vector <Object*> graph = *solution->getObjects();
+
+
+	for (size_t i = 0; i < clusters.size(); i++) {
+		for (size_t j = 0; j < clusters[i].size(); j++) {
+			a << clusters[i][j] << ", " << i <<  endl;
+		}
+	}
+
+
 	a.close();
 
 

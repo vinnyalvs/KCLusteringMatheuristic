@@ -1,11 +1,7 @@
 #pragma once
 #include "Opt.h"
 #include <ilcplex/ilocplex.h>
-#include <iostream>
 #include <vector>
-
-
-
 using namespace std;
 class OptCplex: public Opt {
 private:

@@ -10,8 +10,8 @@ MasterProblem::MasterProblem(int id, int solver, Environment *env)
 
 	if (env->getSolver() == 1)
 		this->model = env->getMdlCplex();
-/*	else if (env->getSolver() == -1)
-		this->model = env->getMdlGRB(); */
+	else if (env->getSolver() == -1)
+		this->model = env->getMdlGRB();
 
 
 }

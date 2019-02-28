@@ -5,7 +5,7 @@
 
 Constructive::Constructive(int numVertex, int numClusters, vector <Object*> *objects, int type, int numAttr)
 {
-	solution = new ShortSolution(numVertex, numClusters);
+
 	this->objects = objects;
 	this->numObjs = numVertex;
 	this->numClusters = numClusters;
@@ -172,14 +172,30 @@ void Constructive::meansClustering()
 	}
 	
 	for (auto obj : *objects) {
-		int clusterID = findMean(obj->getId());
+		int clusterID = findNearestMean(obj->getId());
 		objByCluster[obj->getId() - 1] = clusterID;
 		solution->addObject(obj->getId(), clusterID);
 	}
-
 	solution->distances = distances;
 	solution->setObjectByCluster(objByCluster);
 	solution->means = &means;
+	double mediaN = 0;
+	double media = 0;
+
+	for (int n = 0; n < numAttr; n++) {
+		for (int i = 0; i < numClusters; i++) {
+			media = 0;
+			for (int k = 0; k < solution->clusters[i].size(); k++) {
+				int id = solution->clusters[i][k];
+				media += objects->at(id - 1)->getNormDoubleAttr(n);
+			}
+			mediaN = media / solution->clusters[i].size();
+			solution->means->at(i).attrs[n] = mediaN;
+		}
+	} 
+
+	
+	
 	
 }
 
@@ -189,10 +205,9 @@ int Constructive::findMean(unsigned int id) {
 	int chosed = rand() % 99;
 	int count = 0;
 	double minDist = numeric_limits<double>::max();
-	double minDist2=0;
+	double minDist2;
 	for (auto mean : means) {
 		double dist = distances[id - 1][mean.id - 1];
-	
 		if (minDist > dist) {
 			minDist2 = minDist;
 			mean2 = mean1;

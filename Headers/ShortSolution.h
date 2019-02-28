@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <vector>
 #include <iostream>
@@ -9,6 +9,8 @@ using namespace std;
 class ShortSolution
 {
 public:
+	bool chegueiLa;
+
 	ShortSolution();
 	ShortSolution(int numObj, int numClusters);
 	void showSolution();
@@ -45,7 +47,7 @@ public:
 	void setClusters(vector <vector<int>> clusters);
 
 	void setLargerEdges(vector <Edge> largerEdges);
-	
+
 
 	vector <Object*> *getObjects();
 
@@ -83,7 +85,7 @@ public:
 	void copySolution(ShortSolution * newSol);
 
 	int findNearestMean(Object * obj);
-	int findNearestMean(Object * obj, int orgMean); //Acha o mais próximo EXCETO o org mean
+	int findNearestMean(Object * obj, int orgMean); //Acha o mais prï¿½ximo EXCETO o org mean
 
 	double euclideanDistance(vector<double>* attrA, vector<double>* attrB);
 
@@ -103,7 +105,7 @@ public:
 	bool operator < (ShortSolution cmp1)
 	{
 
-		if (cmp1.getSilhouette() < getSilhouette() )
+		if (cmp1.getSilhouette() < getSilhouette())
 		{
 			return true;
 		}
@@ -114,11 +116,11 @@ public:
 
 
 	vector <vector<int>> clusters;
-	vector <int> objectByCluster; // for each object i have the clusters which it belongs
+    vector <int> objectByCluster; // for each object i have the clusters which it belongs
 
-	
+
 	double **distances;
-
+	int getObjCluster(int objID);
 	double Silhouette;
 
 	int numAttr;
@@ -126,11 +128,22 @@ public:
 	void tradeCluster(int id, int orgMean);
 
 	bool isConsistent;
-private:
-	
-	
 
-	 //for each cluster i have a subgroup of objects in it
+	double getDunnIndex();
+	double getDBIndex();
+	void calculateDBIndex();
+	void calcFitness(int FitnessID);
+	void calculateDunnIndex();
+	double calculateClusterDispersion(int clusterID);
+	double calculateClusterDistance(int clusterOne, int clusterTwo);
+	double calculateClusterDistance(int clusterOne, int clusterTwo, int objOne, int objTwo);
+	double dunnIndex;
+	double dbIndex;
+private:
+
+
+
+	//for each cluster i have a subgroup of objects in it
 
 	vector <double> intraCosts;
 
@@ -150,16 +163,16 @@ private:
 	vector <Edge> largerEdges;
 
 	string fileName;
-	
+
 	double sumCosts; //cost of solution
 
-	
+
 
 };
 
 struct mean {
 	unsigned int id;
+	bool consistent;
 	vector <double> attrs;
 };
-
 
