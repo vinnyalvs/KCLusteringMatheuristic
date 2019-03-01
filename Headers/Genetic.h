@@ -34,6 +34,7 @@ private:
 	
 	
 	vector <ShortSolution*> *newSols;
+	
 	int maxInterations;
 	int timeLimit;
 	int numAttr;
@@ -42,7 +43,8 @@ private:
 	int numOffspring;
 	double crossDist;
 	double bestDist;
-
+	bool isMaxProb; //falso significa que o problema não é de maximização
+	int fitType; //qual metodo de fitness utilizar
 	int type;
 	int numClusters;
 	int numObjs;
@@ -52,7 +54,7 @@ private:
 
 public:
 	void start(vector<ShortSolution*>* sols, vector<Object*>* objects, double ** distances);
-	Genetic(int numGenerations, int numAttr, int numClusters, int numObjs, int mutationRate, int crossoverRate, int numOffspring, double crossDist, double bestDist);
+	Genetic(int numGenerations, int numAttr, int numClusters, int numObjs, int mutationRate, int crossoverRate, int numOffspring, double crossDist, double bestDist, bool isMaxProb, int fitType);
 	Genetic(vector<ShortSolution*>* sols, int maxIterations, vector<ShortSolution*>* newPopulation, int numAttr, int numClusters, int numObjs, vector<Object*>* objects, double **distances);
 
 

@@ -45,7 +45,7 @@ void MasterProblem::buildMasterProblem() {
 	string op = (numClusterBound == 1 ? "<=" : (numClusterBound == 2 ? "=" : ">="));
        if (param.fixedNumClusters) {
 		model->addConstraint(numClusters, op, "numClusters", 1);
-		indCnstNumClusters = model->getNumConstraints() - 1;
+		indCnstNumClusters = model->getNumConstraints()-1;
 	}
 
 
@@ -89,11 +89,8 @@ void MasterProblem::buildMasterProblem() {
 	int clusterSol;
 
 	for (int a = 0; a <x.size(); a++) {
-		//	cout << (x[a]) << endl;
 		solution = (floor)(x[a] / numClusters);
 		clusterSol = x[a] - ((solution)* numClusters);
-		//cout << solution << endl;
-		//cout << clusterSol << endl;
 		vector <vector<int>> clusters = solutions[solution]->getClusters();
 		clustersExactMethod.push_back(clusters[clusterSol]);
 	}

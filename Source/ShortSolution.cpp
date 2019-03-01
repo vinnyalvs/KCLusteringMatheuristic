@@ -185,11 +185,11 @@ void ShortSolution::calculateCostClusters()
 {
 
 
-	//newCalculateIntraCosts();
+	newCalculateIntraCosts();
 
-	calculateIntraCosts();
+	//calculateIntraCosts();
 
-	calculateExternalCosts();
+	//calculateExternalCosts();
 
 	sumCosts = 0.0;
 
@@ -366,6 +366,7 @@ void ShortSolution::calculateSilhouette3() {
 
 		}
 		Silhouette = mediaSilhueta / numObj;
+		fitness = Silhouette;
 		//    printf("Tem %d objetos no cluster errado\nValor Fitness: %f.\n", *objetos_errados, mediaSilhueta);
 	}
 	isConsistent = true;
@@ -382,6 +383,7 @@ double ShortSolution::getSilhouette()
 
 void ShortSolution::copySolution(ShortSolution *newSol) {
 //	newSol->qqu = qqu;
+	newSol->fitness = fitness;
 	newSol->dunnIndex = dunnIndex;
 	newSol->dbIndex = dbIndex;
 	newSol->Silhouette = Silhouette;
@@ -444,6 +446,7 @@ void ShortSolution::calculateDBIndex()
 	}
 
 	dbIndex = maxR / numClusters;
+	fitness = dbIndex;
 
 }
 
@@ -458,22 +461,15 @@ void ShortSolution::calcFitness(int fitnessID) {
 	case 2:
 		calculateDBIndex();
 		break;
+	case 3:
+		fitness = getMaxDisp();
+		break;
 	default:
 		calculateDunnIndex();
 	}
 }
 
-void ShortSolution::calculateDunnIndex()
-{
-	double minDist = numeric_limits<double>::max();
-	for (int i = 0; i < numClusters; i++) {
-		for (int j = i + 1; j <numClusters; j++) {
-			double dist = calculateClusterDistance(i, j);
-			if (minDist > dist)
-				minDist = dist;
-		}
-	}
-
+double ShortSolution::getMaxDisp() {
 	double maxDisp = numeric_limits<double>::min();
 	for (int i = 0; i < numClusters; i++) {
 		double disp = calculateClusterDispersion(i);
@@ -481,12 +477,31 @@ void ShortSolution::calculateDunnIndex()
 			maxDisp = disp;
 		}
 	}
-	//cout << "-------------" << endl;
-	//cout << maxDisp << endl;
-	//cout << minDist << endl;
-	dunnIndex = minDist / maxDisp;
-	//cout << dunnIndex << endl;
-	//cout << "-------------" << endl;
+	return maxDisp;
+}
+void ShortSolution::calculateDunnIndex()
+{
+	if (!isConsistent) {
+		double minDist = numeric_limits<double>::max();
+		for (int i = 0; i < numClusters; i++) {
+			for (int j = i + 1; j < numClusters; j++) {
+				double dist = calculateClusterDistance(i, j);
+				if (minDist > dist)
+					minDist = dist;
+			}
+		}
+
+		double maxDisp = numeric_limits<double>::min();
+		for (int i = 0; i < numClusters; i++) {
+			double disp = calculateClusterDispersion(i);
+			if (disp > maxDisp) {
+				maxDisp = disp;
+			}
+		}
+		dunnIndex = minDist / maxDisp;
+		fitness = dunnIndex;
+	}
+	isConsistent = true;
 }
 
 double ShortSolution::calculateClusterDispersion(int clusterID)

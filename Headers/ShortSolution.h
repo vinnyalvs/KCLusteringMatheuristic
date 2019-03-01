@@ -68,13 +68,13 @@ public:
 
 	double getCost();
 
-	void calculateSilhouette2();
+
 
 	double calculateDissimilarityOne(int objId, int clusterId);
 
 	double calculateDissimilarityTwo(int objId, int clusterId);
 
-	void calculateSilhouette3();
+
 
 
 	double getSilhouette();
@@ -103,17 +103,7 @@ public:
 
 	int findNearestMean(mean m1, vector<struct mean>* m2);
 
-	bool operator < (ShortSolution cmp1)
-	{
-
-		if (cmp1.getSilhouette() < getSilhouette())
-		{
-			return true;
-		}
-
-		return false;
-	}
-
+	
 
 
 	vector <vector<int>> clusters;
@@ -134,12 +124,15 @@ public:
 	double getDBIndex();
 	void calculateDBIndex();
 	void calcFitness(int FitnessID);
+	double getMaxDisp();
 	void calculateDunnIndex();
 	double calculateClusterDispersion(int clusterID);
 	double calculateClusterDistance(int clusterOne, int clusterTwo);
 	double calculateClusterDistance(int clusterOne, int clusterTwo, int objOne, int objTwo);
+	void calculateSilhouette3();
 	double dunnIndex;
 	double dbIndex;
+	double fitness;
 private:
 
 

@@ -60,6 +60,7 @@ void Input::readWineInput() {
 		for(int countObj=0; countObj<numObjs ; countObj++) {
 			this->objects->push_back(new Object(countObj + 1));
 			f >> typeClass;
+			objects->at(countObj)->objClass = typeClass;
 			f >> comma; 
 			i = 0;
 			while (i < numAttr) {

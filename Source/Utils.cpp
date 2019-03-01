@@ -78,7 +78,7 @@ void Utils::printGraph(ShortSolution *solution)
 
 	for (size_t i = 0; i < graph.size(); i++) {
 			//cout << "plt.plot(" << graph[clusters[i][j] - 1].getX() << "," << graph[clusters[i][j] - 1].getY() << "," << "'ro'" << "," << "color=" << colorTable(i) << ")" << "\n" << endl;
-			a << "plt.plot(" << graph[i]->getNormDoubleAttr(0) << "," << graph[i]->getNormDoubleAttr(1) << "," << "'ro'" << ")" << "\n" << endl;
+			a << "plt.plot(" << graph[i]->getNormDoubleAttr(0) << "," << graph[i]->getNormDoubleAttr(1) << "," << "'ro'" << "," << "color='" << colorTable(graph[i]->objClass - 1) << "')" << "\n" << endl;
 	}
 
 

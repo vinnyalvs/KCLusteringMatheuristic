@@ -145,7 +145,7 @@ bool Genetic::areMeansEqual(struct mean m1, struct mean m2) {
 		return true;
 }
 
-Genetic::Genetic(int numGenerations, int numAttr, int numClusters, int numObjs, int mutationRate, int crossoverRate, int numOffspring, double crossDist, double bestDist) {
+Genetic::Genetic(int numGenerations, int numAttr, int numClusters, int numObjs, int mutationRate, int crossoverRate, int numOffspring, double crossDist, double bestDist, bool isMaxProb, int fitType) {
 	this->numAttr = numAttr;
 	this->maxInterations = numGenerations;
 	this->numClusters = numClusters;
@@ -155,16 +155,14 @@ Genetic::Genetic(int numGenerations, int numAttr, int numClusters, int numObjs, 
 	this->numOffspring = numOffspring;
 	this->crossDist = crossDist;
 	this->bestDist = bestDist;
+	this->isMaxProb = isMaxProb; 
+	this->fitType = fitType;
 }
 
 void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, double **distances) {
 	clock_t tInicio, tFim, tDecorrido, tInicio2;
 	this->objects = objects;
 	vector <ShortSolution*> *newPopulation = new vector <ShortSolution*>;
-
-
-
-
 	rankPopulation(sols);
 
 	int count = 0, crossCount1 = 0, crossCount2 = 0, crossCount = 0;
@@ -219,7 +217,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 
 				int mutationR = rand() % 100;
 				if (mutationR <= mutationRate)
-					//mutation(s);
+					mutation(s);
 				//Checando se ap�s a muta��o houve um aborto espont�neo
 				if (s->checkViability() && !(s->chegueiLa)) {
 					newPopulation->push_back(s);
@@ -229,7 +227,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 					kc++;
 				mutationR = rand() % 100;
 				if (mutationR <= mutationRate)
-					//mutation(s2);
+					mutation(s2);
 				if (s2->checkViability() && !(s2->chegueiLa)) {
 					newPopulation->push_back(s2);
 					crossCount2++;
@@ -261,29 +259,18 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 
 		vector <ShortSolution*>::iterator it;
 		for (it = newPopulation->begin(); it != newPopulation->end(); ) {
-			(*it)->calculateDunnIndex();
+			(*it)->calcFitness(fitType);
 			it++;
-			/*if ((*it)->checkViability()) {
-				//	(*it)->calculateSilhouette3();
-				(*it)->calculateDunnIndex();
-				it++;
-			}
-			else {
-				//kb++;
-				it = newPopulation->erase(it);
-			}*/
 		}
 
 
 		fitness.clear();
 
 		for (auto p : *newPopulation) {
-			//if (p->checkViability()) {
 			ShortSolution *n = new ShortSolution();
 			n->numAttr = numAttr;
 			p->copySolution(n);
 			sols->push_back(n);
-			//}
 		}
 
 
@@ -294,9 +281,9 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 
 
 		//cout << "Best Geracao " << count << ": " << sols->at(0)->getSilhouette() << " Tam: " << sols->size() << endl;
-		cout << "Best Geracao " << count << ": " << sols->at(0)->getDunnIndex() << " Tam: " << sols->size() << endl;
+		cout << "Best Geracao " << count << ": " << sols->at(0)->fitness << " Tam: " << sols->size() << endl;
 		//if (lastBest == sols->at(0)->getSilhouette()) {
-		if (lastBest == sols->at(0)->getDunnIndex()) {
+		if (lastBest == sols->at(0)->fitness) {
 			countBest++;
 		}
 		else {
@@ -304,7 +291,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 		}
 		tFim = clock();
 		tDecorrido = ((tFim - tInicio) / (CLOCKS_PER_SEC));
-		if (countBest >= 50)
+		if (countBest >= 100)
 			break;
 
 
@@ -312,7 +299,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 
 		count++;
 		// lastBest = sols->at(0)->getSilhouette();
-		lastBest = sols->at(0)->getDunnIndex();
+		lastBest = sols->at(0)->fitness;
 
 	}
 
@@ -330,11 +317,22 @@ void Genetic::eliminate(int posIni, double rate, vector <ShortSolution*> *soluti
 }
 
 void Genetic::rankPopulation(vector <ShortSolution*> *solutions) {
-	std::sort(solutions->begin(), solutions->end(), [](const ShortSolution* lhs, const ShortSolution* rhs)
+	if (isMaxProb) {
+		std::sort(solutions->begin(), solutions->end(), [](const ShortSolution* lhs, const ShortSolution* rhs)
+		{
+			return lhs->fitness > rhs->fitness;
+			//return lhs->dunnIndex > rhs->dunnIndex;
+			//return lhs->Silhouette > rhs->Silhouette;
+		});
+	}
+	else
 	{
-		return lhs->dunnIndex > rhs->dunnIndex;
-		//return lhs->Silhouette > rhs->Silhouette;
-	});
+		std::sort(solutions->begin(), solutions->end(), [](const ShortSolution* lhs, const ShortSolution* rhs)
+		{
+			return lhs->fitness < rhs->fitness;
+		});
+	}
+	
 }
 
 void Genetic::calcRelFitness(vector <ShortSolution*> *solutions) {
@@ -342,12 +340,11 @@ void Genetic::calcRelFitness(vector <ShortSolution*> *solutions) {
 	double relFitness = 0;
 
 	for (auto s : *solutions) {
-		//sum += s->getSilhouette();
-		sum += s->getDunnIndex();
+		sum += s->fitness;
 	}
 	for (auto s : *solutions) {
 		//relFitness = (s->getSilhouette() / sum) * 100;
-		relFitness = (s->getDunnIndex() / sum) * 100;
+		relFitness = (s->fitness / sum) * 100;
 		aux += relFitness;
 		fitness.push_back(aux);
 	}

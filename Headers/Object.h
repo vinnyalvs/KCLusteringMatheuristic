@@ -5,7 +5,7 @@ using namespace std;
 class Object
 {
 public:
-
+	int objClass;
 	Object();
 	/**
 	object constructor.
