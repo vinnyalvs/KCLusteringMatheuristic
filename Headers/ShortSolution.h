@@ -9,9 +9,7 @@ using namespace std;
 class ShortSolution
 {
 public:
-	char qqu;
 	bool chegueiLa;
-	
 	ShortSolution();
 	ShortSolution(int numObj, int numClusters);
 	void showSolution();
@@ -68,7 +66,7 @@ public:
 
 	double getCost();
 
-
+	void calcRandIndex();
 
 	double calculateDissimilarityOne(int objId, int clusterId);
 
@@ -125,6 +123,8 @@ public:
 	void calculateDBIndex();
 	void calcFitness(int FitnessID);
 	double getMaxDisp();
+	double getMaxDistAmongAllClusters();
+	void calcAdaptDunnIndex();
 	void calculateDunnIndex();
 	double calculateClusterDispersion(int clusterID);
 	double calculateClusterDistance(int clusterOne, int clusterTwo);
@@ -133,17 +133,18 @@ public:
 	double dunnIndex;
 	double dbIndex;
 	double fitness;
+	double randIndex;
+
+	vector <double> externalDists;
+	vector <double> dispersions;
+	vector <double> costClusters;
 private:
 
 
 
 	//for each cluster i have a subgroup of objects in it
 
-	vector <double> intraCosts;
 
-	vector <double> externalCosts;
-
-	vector <double> costClusters;
 
 
 	int numObj;

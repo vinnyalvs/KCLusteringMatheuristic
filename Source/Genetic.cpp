@@ -282,6 +282,9 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 
 		//cout << "Best Geracao " << count << ": " << sols->at(0)->getSilhouette() << " Tam: " << sols->size() << endl;
 		cout << "Best Geracao " << count << ": " << sols->at(0)->fitness << " Tam: " << sols->size() << endl;
+		count++;
+		if (count >= maxInterations)
+			break;
 		//if (lastBest == sols->at(0)->getSilhouette()) {
 		if (lastBest == sols->at(0)->fitness) {
 			countBest++;
@@ -297,7 +300,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 
 
 
-		count++;
+	
 		// lastBest = sols->at(0)->getSilhouette();
 		lastBest = sols->at(0)->fitness;
 

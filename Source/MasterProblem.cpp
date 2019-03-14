@@ -47,8 +47,10 @@ void MasterProblem::buildMasterProblem() {
 		model->addConstraint(numClusters, op, "numClusters", 1);
 		indCnstNumClusters = model->getNumConstraints()-1;
 	}
-
-
+	double maxV;
+	model->addConstraint(maxV, "<=", "maxDist", 0);
+	double maxDi;
+	model->addConstraint(maxDi, "<=", "maxDisp", 0);
 	const int numConstr = model->getNumConstraints();
 
 	vector <double> coeffs;
@@ -60,6 +62,8 @@ void MasterProblem::buildMasterProblem() {
 
 		vector <double> costs = solutions[i]->getCostClusters();
 		vector <vector<int>> clusters = solutions[i]->getClusters();
+		vector <double> dispersions = solutions[i]->dispersions;
+		vector <double> extDists = solutions[i]->externalDists;
 
 		for (int j = 0; j < numClusters; j++) {
 

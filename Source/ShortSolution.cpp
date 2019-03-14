@@ -15,8 +15,8 @@ ShortSolution::ShortSolution(int numObj, int numClusters)
 	vector <int> a;
 	clusters.assign(numClusters, a);
 	costClusters.assign(numClusters, 0.0);
-	intraCosts.assign(numClusters, 0.0);
-	externalCosts.assign(numClusters, 0.0);
+	dispersions.assign(numClusters, 0.0);
+	externalDists.assign(numClusters, 0.0);
 	chegueiLa = false;
 	isConsistent = false;
 
@@ -185,16 +185,12 @@ void ShortSolution::calculateCostClusters()
 {
 
 
-	newCalculateIntraCosts();
-
-	//calculateIntraCosts();
-
-	//calculateExternalCosts();
+	
 
 	sumCosts = 0.0;
 
 	for (size_t i = 0; i < numClusters; i++) {
-		costClusters[i] = intraCosts[i] - externalCosts[i];
+		costClusters[i] = dispersions[i] - externalDists[i];
 		sumCosts += costClusters[i];
 	}
 
@@ -204,80 +200,7 @@ void ShortSolution::calculateCostClusters()
 
 }
 
-void ShortSolution::calculateIntraCosts()
-{
 
-
-	//Para cada cluster i com k objetos
-	for (int i = 0; i < clusters.size(); i++) {
-		//Para cada objeto j Node cluster i
-		double soma = 0;
-		for (int j = 0; j < clusters[i].size(); j++) {
-			//Somatorio das distancias do obj j aos outros k-1 objetos do cluster
-			// soma += distancia obj j
-			for (int k = j; k < clusters[i].size(); k++) {
-				if (j != k) {
-					//cout << "J: " << j << " K " << k << endl;
-					//double a = objects->at(j)->getDistance(k - 1);
-					soma += distances[clusters[i][j] - 1][k - 1];
-				}
-			}
-		}
-		intraCosts[i] = soma/clusters[i].size();
-
-	//	cout << intraCosts[i]  << endl;
-	}
-	
-
-	
-
-
-}
-
-void ShortSolution::newCalculateIntraCosts()
-{
-
-	for (int i = 0; i < clusters.size(); i++) {
-		//Para cada objeto j Node cluster i
-		double max = 0;
-		for (int j = 0; j < clusters[i].size(); j++) {
-			//Somatorio das distancias do obj j aos outros k-1 objetos do cluster
-			// soma += distancia obj j
-			for (int k = j; k < clusters[i].size(); k++) {
-				if (j != k) {
-					if(distances[clusters[i][j] - 1][k - 1] > max)
-					     max = distances[clusters[i][j] - 1][k - 1];
-				}
-			}
-		}
-		intraCosts[i] = max;
-	}
-	
-	
-
-}
-
-void ShortSolution::calculateExternalCosts()
-{
-	for (int i = 0; i < numClusters; i++) {
-		double b = 0;
-		int closestCluster = 0;
-		double minDist = std::numeric_limits<double>::max();
-		for (int j = 0; j < clusters[i].size(); j++) {
-			double d;
-			for (int k = 1; k <= numObj; k++) {
-				if (clusters[i][j] != k && i != objectByCluster[k-1]) {
-					d = distances[j][k];
-					if (d < minDist) {
-						minDist = d;
-						closestCluster = objectByCluster[j];
-					}
-				}
-			}
-		}
-		externalCosts[i] = minDist;
-	}
-}
 
 vector<double> ShortSolution::getCostClusters()
 {
@@ -286,6 +209,45 @@ vector<double> ShortSolution::getCostClusters()
 
 double ShortSolution::getCost() {
 	return sumCosts;
+
+}
+
+void ShortSolution::calcRandIndex()
+{
+	/*SOMA A : quantidade de pares de exemplares que pertencem a um mesmo grupo G e `a uma
+		mesma parti¸c˜ao P;
+	SOMA B : quatidade de pares de exemplares que pertencem a um mesmo grupo G e `a parti¸c˜oes P
+		diferentes;
+	SOMA C : quantidade de pares de exemplares que pertencem a grupos G diferentes e `a mesma
+		parti¸c˜ao P;
+	SOMA D : quantidade de pares de exemplares que pertencem a grupos G diferentes e `a parti¸c˜oes P
+		diferentes. */	double A = 0, B = 0, C = 0, D = 0;	for (unsigned int i = 0; i < clusters.size(); i++) {
+		for (unsigned int j = 0; j < clusters[i].size(); j++) {
+			for (unsigned int k = j + 1; k < clusters[i].size(); k++) {
+				if (objects->at(clusters[i][j] - 1)->objClass == objects->at(clusters[i][k] - 1)->objClass) {
+					A++;
+				}
+				else {
+					B++;
+				}
+			}
+		}
+	}
+
+	for (unsigned int i = 0; i < objects->size(); i++) {
+		for (unsigned int j = i+1; j < objects->size(); j++) {
+			if (getObjCluster(i) != getObjCluster(j) && objects->at(i)->objClass == objects->at(j)->objClass) {
+				C++;
+			}
+			else if (getObjCluster(i) != getObjCluster(j) && objects->at(i)->objClass == objects->at(j)->objClass) {
+				D++;
+			}
+		}
+	}
+
+
+	randIndex = (A + D) / (A + B + C + D);
+
 
 }
 
@@ -393,8 +355,8 @@ void ShortSolution::copySolution(ShortSolution *newSol) {
 	newSol->numObj = numObj;
 	newSol->numClusters = numClusters;
 	newSol->costClusters = costClusters;
-	newSol->externalCosts = externalCosts;
-	newSol->intraCosts = intraCosts;
+	newSol->externalDists = externalDists;
+	newSol->dispersions = dispersions;
 	newSol->clusters = clusters;
 	newSol->objectByCluster = objectByCluster;
 	newSol->means = means;
@@ -464,6 +426,10 @@ void ShortSolution::calcFitness(int fitnessID) {
 	case 3:
 		fitness = getMaxDisp();
 		break;
+	case 4:
+		calculateCostClusters();
+		fitness = getCost();
+		break;
 	default:
 		calculateDunnIndex();
 	}
@@ -476,9 +442,36 @@ double ShortSolution::getMaxDisp() {
 		if (disp > maxDisp) {
 			maxDisp = disp;
 		}
+		dispersions.push_back(disp);
 	}
 	return maxDisp;
 }
+
+double ShortSolution::getMaxDistAmongAllClusters() {
+	double maxDist = numeric_limits<double>::min();
+	double dist;
+	for (int i = 0; i < numClusters; i++) {
+		for (int j = i+1; j < numClusters; j++) {
+				for (int k = 0; k < clusters[j].size(); k++) {
+					vector <double> attr = objects->at(clusters[j][k] - 1)->getNormDoubleAttrs();
+					dist = euclideanDistance(&means[i].attrs, &attr );
+					if (maxDist < dist)
+						maxDist = dist;
+				}
+		}
+		externalDists.push_back(dist);
+	}
+
+	return maxDist;
+
+}
+
+void ShortSolution::calcAdaptDunnIndex() {
+	double maxDisp = getMaxDisp();
+	double maxDist = getMaxDistAmongAllClusters();
+
+}
+
 void ShortSolution::calculateDunnIndex()
 {
 	if (!isConsistent) {
@@ -669,4 +662,15 @@ bool ShortSolution::checkViability() {
 	
 	
 
+}
+
+
+int ShortSolution::getObjCluster(int objID) {
+	for (int i = 0; i < numClusters; i++) {
+		for (int j = 0; j < clusters[i].size(); j++) {
+			if (objID == clusters[i][j]);
+			return i;
+		}
+	}
+	return objID;
 }
