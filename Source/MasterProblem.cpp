@@ -4,10 +4,6 @@ MasterProblem::MasterProblem(int id, int solver, Environment *env)
 	this->id = id;
 	this->solver = solver;
 	this->env = env;
-
-
-
-
 	if (env->getSolver() == 1)
 		this->model = env->getMdlCplex();
 	else if (env->getSolver() == -1)
@@ -47,11 +43,16 @@ void MasterProblem::buildMasterProblem() {
 		model->addConstraint(numClusters, op, "numClusters", 1);
 		indCnstNumClusters = model->getNumConstraints()-1;
 	}
-	double maxV;
-	model->addConstraint(maxV, "<=", "maxDist", 0);
-	double maxDi;
-	model->addConstraint(maxDi, "<=", "maxDisp", 0);
+
+	model->addConstraint(0, "<=", "maxDist", 0);
+	model->addConstraint(0, "<=", "maxDisp", 0);
+
+
+
+
+
 	const int numConstr = model->getNumConstraints();
+	
 
 	vector <double> coeffs;
 	int idObj;
@@ -68,6 +69,7 @@ void MasterProblem::buildMasterProblem() {
 		for (int j = 0; j < numClusters; j++) {
 
 			model->addVar(1, costs[j], "cluster" + std::to_string(i + j), "int", 0);
+			
 			int indVar = model->getNumVars() - 1;
 
 			for (int k = 0; k < clusters[j].size(); k++) {
@@ -75,9 +77,13 @@ void MasterProblem::buildMasterProblem() {
 				model->setConstraintCoeffs(1, indCnstr, indVar);
 			}
 
+			model->addConstraint(1/extDists[j], "<=", "cluster" + std::to_string(i + j) + "maxDist", 0);
+			model->addConstraint(dispersions[j], "<=", "cluster" + std::to_string(i + j) + "maxDisp", 0);
+
 			if (param.fixedNumClusters)
 				model->setConstraintCoeffs(1, indCnstNumClusters, indVar);
 		}
+
 
 	}
 
