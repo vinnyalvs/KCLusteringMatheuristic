@@ -413,6 +413,8 @@ void ShortSolution::calculateDBIndex()
 }
 
 void ShortSolution::calcFitness(int fitnessID) {
+	double maxDist = 0.0;
+	double maxDisp = 0.0;
 	switch (fitnessID) {
 	case 0:
 		calculateSilhouette3();
@@ -424,7 +426,11 @@ void ShortSolution::calcFitness(int fitnessID) {
 		calculateDBIndex();
 		break;
 	case 3:
-		fitness = getMaxDisp();
+		//fitness = getMaxDisp();
+		maxDist = getMaxDistAmongAllClusters();
+		maxDisp = getMaxDisp();
+		//fitness = getCost();
+		fitness = maxDist / maxDisp;
 		break;
 	case 4:
 		calculateCostClusters();

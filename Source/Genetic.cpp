@@ -169,7 +169,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 	int rand1, rand2 = 0;
 
 	//Enquanto n�o est� na gera��o Final
-	double lastBest;
+	double lastBest=0.0;
 	int countBest = 0;
 	while (count < maxInterations) {
 
@@ -283,6 +283,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 		//cout << "Best Geracao " << count << ": " << sols->at(0)->getSilhouette() << " Tam: " << sols->size() << endl;
 		cout << "Best Geracao " << count << ": " << sols->at(0)->fitness << " Tam: " << sols->size() << endl;
 		count++;
+		lastBest = sols->at(0)->fitness;
 		if (count >= maxInterations)
 			break;
 		//if (lastBest == sols->at(0)->getSilhouette()) {
@@ -301,8 +302,8 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 
 
 	
-		// lastBest = sols->at(0)->getSilhouette();
-		lastBest = sols->at(0)->fitness;
+		
+		
 
 	}
 
@@ -397,16 +398,19 @@ void Genetic::mutation(ShortSolution * sol1)
 	//cout << selDispersedCluster << endl;
 
 	vector <int> selCluster = sol1->clusters[count];
+	cout << selCluster.size() << endl;
 	double maxDist = numeric_limits<double>::min();
 	int mostDistObj;
 	for (auto obj : selCluster) {
 		vector <double> attr = objects->at(obj - 1)->getNormDoubleAttrs();
 		double dist = euclideanDistance(&attr, &sol1->means[count].attrs);
+		cout << dist << endl;
 		if (dist > maxDist) {
+			maxDist = dist;
 			mostDistObj = obj;
 		}
 	}
-	//system("cls");
+	cout << maxDist << endl;
 	//int newMean = sol1->findNearestMean(objects->at(mostDistObj));
 
 	sol1->tradeCluster(mostDistObj, count);
@@ -414,12 +418,12 @@ void Genetic::mutation(ShortSolution * sol1)
 
 	//int id = sol1->clusters[count];
 
-
+	system("cls");
 
 }
 
 void Genetic::newRndPop(vector<ShortSolution*>* solutions, int numSolutions) {
-	ShortSolution *es;
+	ShortSolution *es = new ShortSolution();
 	solutions->at(0)->copySolution(es);
 	for (int j = 0; j < numSolutions; j++) {
 		ShortSolution *s;
