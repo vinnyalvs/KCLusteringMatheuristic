@@ -216,7 +216,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 				crossover(sols->at(rand1), sols->at(rand2), s, s2);
 
 				int mutationR = rand() % 100;
-				if (mutationR <= mutationRate)
+				if (mutationR <= mutationRate && s->checkViability())
 					mutation(s);
 				//Checando se ap�s a muta��o houve um aborto espont�neo
 				if (s->checkViability() && !(s->chegueiLa)) {
@@ -226,7 +226,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 				else
 					kc++;
 				mutationR = rand() % 100;
-				if (mutationR <= mutationRate)
+				if (mutationR <= mutationRate && s2->checkViability())
 					mutation(s2);
 				if (s2->checkViability() && !(s2->chegueiLa)) {
 					newPopulation->push_back(s2);
@@ -234,6 +234,7 @@ void Genetic::start(vector<ShortSolution*>* sols, vector <Object*> *objects, dou
 				}
 				else
 					kc++;
+
 
 			}
 
@@ -376,49 +377,50 @@ int Genetic::roulette() {
 
 void Genetic::mutation(ShortSolution * sol1)
 {
-
-
-	sol1->calculateCostClusters();
-	vector <double> dispersion = sol1->getCostClusters();
-	vector <double> orgDispersion = sol1->getCostClusters();
-	sort(dispersion.begin(), dispersion.end());
-	double sum = 0, aux = 0;
-	double relFitness = 0;
-	int cut = (ceil)(dispersion.size() * 0.4);
-	int selDispersedCluster = rand() % cut;
-	//cout << cut << endl;
-	//cout << dispersion.size() << endl;
-	int count = -1;
-	for (auto f : orgDispersion) {
-		count++;
-		if (dispersion[selDispersedCluster] == f) {
-			break;
-		}
+	bool dontMutate = false;
+	for (auto c : sol1->clusters) {
+		if (c.size() == 1)
+			dontMutate = true;
 	}
-	//cout << selDispersedCluster << endl;
-
-	vector <int> selCluster = sol1->clusters[count];
-	cout << selCluster.size() << endl;
-	double maxDist = numeric_limits<double>::min();
-	int mostDistObj;
-	for (auto obj : selCluster) {
-		vector <double> attr = objects->at(obj - 1)->getNormDoubleAttrs();
-		double dist = euclideanDistance(&attr, &sol1->means[count].attrs);
-		cout << dist << endl;
-		if (dist > maxDist) {
-			maxDist = dist;
-			mostDistObj = obj;
+	if(!dontMutate){
+		sol1->calculateCostClusters();
+		vector <double> dispersion = sol1->getCostClusters();
+		vector <double> orgDispersion = sol1->getCostClusters();
+		sort(dispersion.begin(), dispersion.end());
+		double sum = 0, aux = 0;
+		double relFitness = 0;
+		int cut = (ceil)(dispersion.size() * 0.4);
+		int selDispersedCluster = rand() % cut;
+		//cout << cut << endl;
+		//cout << dispersion.size() << endl;
+		int count = -1;
+		for (auto f : orgDispersion) {
+			count++;
+			if (dispersion[selDispersedCluster] == f) {
+				break;
+			}
 		}
+		//cout << selDispersedCluster << endl;
+
+		vector <int> selCluster = sol1->clusters[count];
+		double maxDist = numeric_limits<double>::min();
+		int mostDistObj;
+		for (auto obj : selCluster) {
+			vector <double> attr = objects->at(obj - 1)->getNormDoubleAttrs();
+			double dist = euclideanDistance(&attr, &sol1->means[count].attrs);
+			if (dist > maxDist) {
+				mostDistObj = obj;
+			}
+		}
+		//system("cls");
+		//int newMean = sol1->findNearestMean(objects->at(mostDistObj));
+
+		sol1->tradeCluster(mostDistObj, count);
+
+
+		//int id = sol1->clusters[count];
+
 	}
-	cout << maxDist << endl;
-	//int newMean = sol1->findNearestMean(objects->at(mostDistObj));
-
-	sol1->tradeCluster(mostDistObj, count);
-
-
-	//int id = sol1->clusters[count];
-
-	system("cls");
 
 }
 
