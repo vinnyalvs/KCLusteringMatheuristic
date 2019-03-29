@@ -30,6 +30,9 @@ public:
 	void	changeNonzeros(int nonzeros, string name);
 	void	removeVar(string name);
 	void	addConstraint(double rightSide, string sense, string name, double lowerbound=0);
+	void    addConstraint(int numVar, string sense, string name, double lb);
+	void    addConstraint(int rhsVarId, int lhsVarId, string sense, string name, double lowerbound);
+	void    addConstraint(double coeff, int rhsVarId, int lhsVarId, string sense, string name, double lowerbound);
 	void    updateModel();
 	void	removeConstraint(string name);
 	int		getNumConstraints();
@@ -40,6 +43,7 @@ public:
 	void    setConstraintCoeffs(const double coeff, int indexConstr, int indexVar);
 	void	chgCoeff(string constrName, string varName, double coeff);
 	void	buildModel(string sense);
+	void    buildModel(string sense, int varMaxDisp, int varMaxDist);
 	void	setParamTimeLimit();
 	void	setParamTimeLimit(double timeLimit);
 	void	setParamTolerance();

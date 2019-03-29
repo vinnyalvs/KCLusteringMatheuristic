@@ -67,7 +67,6 @@ void CplexModel::addConstraint(double rightSide, string type, string name, doubl
 
 		
 
-
 		constr.add(IloRange(env, lowerbound, rightSide, name.c_str()));
 		
 		numConstraints++;
@@ -76,6 +75,18 @@ void CplexModel::addConstraint(double rightSide, string type, string name, doubl
 		cerr << "Error: " << ex << endl;
 	}
 }
+
+void CplexModel::addConstraint(double coeff, int rhsVarId, int lhsVarId , string type, string name, double lowerbound) {
+	try {
+		model.add(coeff * vars[lhsVarId] <= vars[rhsVarId]);
+		numConstraints++;
+	}
+	catch (IloException& ex) {
+		cerr << "Error: " << ex << endl;
+	}
+}
+
+
 
 void CplexModel::removeConstraint(string name)
 {
@@ -183,7 +194,7 @@ void CplexModel::setConstraintCoeffs(const double coeff, int indexConstr,int ind
 
 
 		constr[indexConstr].setLinearCoef(vars[indexVar], coeff);
-		constr[indexConstr].getExpr();
+		
 	
 
 
@@ -217,7 +228,7 @@ void CplexModel::chgCoeff(string constrName, string varName, double coeff)
 void CplexModel::buildModel(string sense)
 {
 	//
-
+	
 	model.add(vars);
 	model.add(constr);
 	model.add(objective);
@@ -246,6 +257,42 @@ void CplexModel::buildModel(string sense)
 		cerr << "Error: " << ex << endl;
 	}
 	
+}
+
+
+
+void CplexModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
+{
+	//
+
+	IloObjective *obj;
+	//obj.setExpr(vars[varMaxDisp] + vars[varMaxDist]);
+	obj = new IloObjective(env, vars[varMaxDisp] * vars[varMaxDist], IloObjective::Minimize);
+	//obj.setSense(IloObjective::Minimize);
+	model.add(vars);
+	model.add(constr);
+	cplex.setParam(IloCplex::Param::SolutionType, 2);
+//	model.add(objective);
+	cout << "batata" << endl;
+	model.add(*obj);
+	
+
+	try {
+
+
+		cout << "----------------------------------------" << endl;
+		cplex.solve();
+
+		cout << endl;
+		cout << "Solution status: " << cplex.getStatus() << endl;
+		cout << "Value: " << cplex.getObjValue() << endl;
+		cout << endl;
+		cout << "----------------------------------------" << endl;
+	}
+	catch (IloException& ex) {
+		cerr << "Error: " << ex << endl;
+	}
+
 }
 
 void CplexModel::setParamTimeLimit()
@@ -327,10 +374,16 @@ vector<double> CplexModel::getVarsInSol()
 {
 	vector <double> values;
 	for (int i = 0; i < vars.getSize(); i++) {
+
 		if (cplex.getValue(vars[i]) != 0) {
+
 			values.push_back(i);
+			cout << i << " " << cplex.getValue(vars[i]) << endl;
+
 		}
-	} 
+
+		
+	}
 	return values;
 
 }

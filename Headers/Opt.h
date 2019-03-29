@@ -107,6 +107,7 @@ public:
 	 @param none
 	 @return int numConstraints, the number of constraints in model
 	 */
+	 virtual void addConstraint(double coeff, int rhsVarId, int lhsVarId, string type, string name, double lowerbound) = 0;
 	 virtual int getNumConstraints() = 0;
 	 /**
 	 remove a constraint which name is given
@@ -204,7 +205,7 @@ public:
 
 	virtual void printVarsInSol() = 0;
 
-
+	virtual void  buildModel(string sense, int varMaxDisp, int varMaxDist) = 0;
 
 
 	virtual vector<double> getVarsInSol() = 0;

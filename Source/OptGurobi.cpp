@@ -123,6 +123,8 @@ void GurobiModel::addConstraint(double rightSide, string sense, string name, dou
 		}
 		//The expr its made with 0, only after(setAllVarsConstraintCoeffs or setConstraintCoeffs) we build the expr of the constr
 		model->addConstr(0, s, rightSide, name);
+		GRBLinExpr rhs;
+		model->addConstr(0, s, rhs, name);
 		numConstraints++;
 		//model->update();
 
@@ -132,10 +134,35 @@ void GurobiModel::addConstraint(double rightSide, string sense, string name, dou
 		cout << e.getMessage() << endl;
 	}
 
-
-
 }
 
+
+void GurobiModel::addConstraint(double coeff,int rhsVarId, int lhsVarId, string sense, string name, double lowerbound) {
+
+	try {
+		char s;
+
+		if (sense == "<=") {
+			s = GRB_LESS_EQUAL;
+		}
+		else if (sense == "=") {
+			s = GRB_EQUAL;
+		}
+		else {
+			s = GRB_GREATER_EQUAL;
+		}
+		//The expr its made with 0, only after(setAllVarsConstraintCoeffs or setConstraintCoeffs) we build the expr of the constr
+
+		model->addConstr(model->getVar(lhsVarId) <= model->getVar(rhsVarId), name);
+		numConstraints++;
+		//model->update();
+
+	}
+	catch (GRBException e) {
+		cout << "Error code = " << e.getErrorCode() << endl;
+		cout << e.getMessage() << endl;
+	}
+}
 
 void GurobiModel::updateModel() {
 	model->update();
@@ -167,7 +194,6 @@ int GurobiModel::getNumVars()
 {
 	//return model->get(GRB_IntAttr_NumVars);
 	//The reason i did this is because we need to update the model before we call getNumVars, and maybe we haven't call it earlier.
-	model->update();
 	return numVars;
 }
 
@@ -311,6 +337,39 @@ void GurobiModel::buildModel(string sense)
 	}
 }
 
+void GurobiModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
+{
+	model->update();
+	try {
+		int s;
+		if (sense == "maximize") {
+			s = GRB_MAXIMIZE;
+		}
+		else {
+			s = GRB_MINIMIZE;
+		}
+		GRBVar *vars = model->getVars();
+	/*	GRBLinExpr expr = 0;
+		for (int i = 0; i < getNumVars(); i++) {
+			cout << vars[i].get(GRB_DoubleAttr_Obj) << endl;
+			expr += GRBLinExpr(vars[i], vars[i].get(GRB_DoubleAttr_Obj)); // build the objective expression
+
+		}*/
+		GRBQuadExpr obj = vars[varMaxDisp] * vars[varMaxDist];
+		model->setObjective(obj, GRB_MINIMIZE);
+
+		model->optimize();
+		cout << "Obj: " << model->get(GRB_DoubleAttr_ObjVal) << endl;
+
+		const int numVars = model->get(GRB_IntAttr_NumVars);
+
+	}
+	catch (GRBException e) {
+		cout << "Error code = " << e.getErrorCode() << endl;
+		cout << e.getMessage() << endl;
+	}
+}
+
 //----------- params
 void GurobiModel::setParamTimeLimit()
 {
@@ -430,7 +489,7 @@ vector<double> GurobiModel::getVarsInSol()
 {
 	GRBVar *vars = model->getVars();
 	vector <double> values;
-	for (int i = 0; i < getNumVars(); i++) {
+	for (int i = 0; i < model->get(GRB_IntAttr_NumVars); i++) {
 		if (vars[i].get(GRB_DoubleAttr_X) != 0) {
 			values.push_back(i);
 		}

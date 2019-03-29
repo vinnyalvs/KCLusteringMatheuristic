@@ -448,7 +448,7 @@ double ShortSolution::getMaxDisp() {
 		if (disp > maxDisp) {
 			maxDisp = disp;
 		}
-		dispersions.push_back(disp);
+		dispersions[i] = disp;
 	}
 	return maxDisp;
 }
@@ -465,7 +465,8 @@ double ShortSolution::getMaxDistAmongAllClusters() {
 						maxDist = dist;
 				}
 		}
-		externalDists.push_back(dist);
+		externalDists[i] = dist;
+
 	}
 
 	return maxDist;
