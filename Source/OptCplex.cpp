@@ -78,7 +78,7 @@ void CplexModel::addConstraint(double rightSide, string type, string name, doubl
 
 void CplexModel::addConstraint(double coeff, int rhsVarId, int lhsVarId , string type, string name, double lowerbound) {
 	try {
-		model.add(coeff * vars[lhsVarId] <= vars[rhsVarId]);
+		model.add(coeff * vars[lhsVarId] - vars[rhsVarId] <= 0 );
 		numConstraints++;
 	}
 	catch (IloException& ex) {
@@ -267,13 +267,16 @@ void CplexModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
 
 	IloObjective *obj;
 	//obj.setExpr(vars[varMaxDisp] + vars[varMaxDist]);
-	obj = new IloObjective(env, vars[varMaxDisp] * vars[varMaxDist], IloObjective::Minimize);
+//	obj = new IloObjective(env, vars[varMaxDisp] * vars[varMaxDist], IloObjective::Minimize);
 	//obj.setSense(IloObjective::Minimize);
+	
+	
+	obj = new IloObjective(env, vars[varMaxDisp], IloObjective::Minimize);
+
 	model.add(vars);
 	model.add(constr);
-	cplex.setParam(IloCplex::Param::SolutionType, 2);
+	//cplex.setParam(IloCplex::Param::SolutionType, 2);
 //	model.add(objective);
-	cout << "batata" << endl;
 	model.add(*obj);
 	
 
@@ -282,6 +285,8 @@ void CplexModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
 
 		cout << "----------------------------------------" << endl;
 		cplex.solve();
+
+		cplex.exportModel("arquivo.lp");
 
 		cout << endl;
 		cout << "Solution status: " << cplex.getStatus() << endl;

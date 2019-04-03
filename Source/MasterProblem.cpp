@@ -52,8 +52,8 @@ void MasterProblem::buildMasterProblem() {
 
 	model->addVar(100, 1, "maxDisp", "double", 0);
 	int varMaxDisp = model->getNumVars() - 1;
-	model->addVar(100, 1, "maxDist", "double",0);
-	int varMaxDist = model->getNumVars() - 1;
+	//model->addVar(100, 1, "maxDist", "double",0);
+//	int varMaxDist = model->getNumVars() - 1;
 	vector <double> coeffs;
 	int idObj;
 
@@ -74,7 +74,7 @@ void MasterProblem::buildMasterProblem() {
 			model->addVar(1, 0, "cluster" + std::to_string(i + j), "int", 0);
 			int indVar = model->getNumVars() - 1;
 			model->addConstraint(dispersions[j], varMaxDisp, indVar, "<=", "cluster" + std::to_string(i + j) + "maxDisp", 0);
-			model->addConstraint(1 / extDists[j], varMaxDist, indVar, "<=", "cluster" + std::to_string(i + j) + "maxDist", 0);
+			//model->addConstraint(1/extDists[j], varMaxDist, indVar, "<=", "cluster" + std::to_string(i + j) + "maxDist", 0);
 
 
 			for (int k = 0; k < clusters[j].size(); k++) {
@@ -89,8 +89,9 @@ void MasterProblem::buildMasterProblem() {
 
 
 	}
-
-	model->buildModel("minimize",varMaxDisp,varMaxDist);
+	//model->buildModel("minimize");
+	//model->buildModel("minimize",varMaxDisp,varMaxDist);
+	model->buildModel("maximize", varMaxDisp, 0);
 
 	vector <double> x = model->getVarsInSol();
 
@@ -99,15 +100,20 @@ void MasterProblem::buildMasterProblem() {
 	int solution;
 	int clusterSol;
 
-	for (int a = 0; a <x.size(); a++) {
-		solution = (floor)(x[a] / numClusters);
-		clusterSol = x[a] - ((solution)* numClusters);
+	for (int a = 1; a <x.size(); a++) {
+		solution = floor( (x[a]) / numClusters);
+		clusterSol = (x[a]) - ((solution)* numClusters);
 		vector <vector<int>> clusters = solutions[solution]->getClusters();
 		clustersExactMethod.push_back(clusters[clusterSol]);
 	}
 
 
-
+	/*for (int a = 0; a <x.size(); a++) {
+		solution = ceil((x[a] - 1) / numClusters);
+		clusterSol = (x[a] - 1) - ((solution - 1)* numClusters);
+		vector <vector<int>> clusters = solutions[solution - 1]->getClusters();
+		clustersExactMethod.push_back(clusters[clusterSol - 1]);
+	}*/
 
 	/*for (auto s : solutions) {
 		delete s;
