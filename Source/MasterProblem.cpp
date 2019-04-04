@@ -30,25 +30,25 @@ void MasterProblem::buildMasterProblem() {
 	exprs.assign(numObjs, 0);
 
 	vector <double> costClusters;
-
+	int indCnstNumClusters;
+	string op = (numClusterBound == 1 ? "<=" : (numClusterBound == 2 ? "=" : ">="));
+	if (param.fixedNumClusters) {
+		model->addConstraint(numClusters, op, "numClusters", numClusters);
+		indCnstNumClusters = model->getNumConstraints() - 1;
+	}
 
 	for (int j = 0; j < numObjs; j++) {
-		model->addConstraint(1, "=", "Obj" + std::to_string(j), 1);
+		model->addConstraint(1, "=", "Object" + std::to_string(j), 1);
 	}
-	int indCnstNumClusters = -1;
+
 
 	//criar param limite num clusters (0=nenhum,1=minimo,2=exato,3=maximo)
-	string op = (numClusterBound == 1 ? "<=" : (numClusterBound == 2 ? "=" : ">="));
-       if (param.fixedNumClusters) {
-		model->addConstraint(numClusters, op, "numClusters", numClusters);
-		indCnstNumClusters = model->getNumConstraints()-1;
-	}
 
 	double maxDist = numeric_limits<double>::min();
 	double maxDisp= numeric_limits<double>::min();
 	const int numConstr = model->getNumConstraints();
 	
-
+	
 
 	model->addVar(100, 1, "maxDisp", "double", 0);
 	int varMaxDisp = model->getNumVars() - 1;
@@ -56,7 +56,7 @@ void MasterProblem::buildMasterProblem() {
 //	int varMaxDist = model->getNumVars() - 1;
 	vector <double> coeffs;
 	int idObj;
-
+	//system("cls");
 
 	for (int i = 0; i < solutions.size(); i++) {
 
@@ -68,9 +68,10 @@ void MasterProblem::buildMasterProblem() {
 
 
 
-		for (int j = 0; j < numClusters; j++) {
 
-			//model->addVar(1, costs[j], "cluster" + std::to_string(i + j), "int", 0);
+		for (int j = 0; j < numClusters; j++) {
+	//		cout << model->getNumVars() << endl;
+			//model->addVar(1, costs[j] , "cluster" + std::to_string(model->getNumVars()), "int", 0);
 			model->addVar(1, 0, "cluster" + std::to_string(i + j), "int", 0);
 			int indVar = model->getNumVars() - 1;
 			model->addConstraint(dispersions[j], varMaxDisp, indVar, "<=", "cluster" + std::to_string(i + j) + "maxDisp", 0);
@@ -78,7 +79,7 @@ void MasterProblem::buildMasterProblem() {
 
 
 			for (int k = 0; k < clusters[j].size(); k++) {
-				int indCnstr = clusters[j][k] - 1;
+				int indCnstr = clusters[j][k];
 				model->setConstraintCoeffs(1, indCnstr, indVar);
 			}
 
@@ -89,6 +90,9 @@ void MasterProblem::buildMasterProblem() {
 
 
 	}
+
+	
+
 	//model->buildModel("minimize");
 	//model->buildModel("minimize",varMaxDisp,varMaxDist);
 	model->buildModel("maximize", varMaxDisp, 0);
@@ -148,3 +152,4 @@ void MasterProblem::setParams(Param p)
 MasterProblem::~MasterProblem()
 {
 }
+

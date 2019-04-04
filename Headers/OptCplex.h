@@ -20,13 +20,14 @@ private:
 	IloObjective	objective;
 	IloRangeArray	constr;
 	IloConstraintArray constr2;
-	vector<double>	coeffsObj;
+	vector <float>	coeffsObj;
 public:
 	CplexModel(const char *name, IloEnv env);
 	~CplexModel();
 	IloModel	getModel();
 	void		imprimirInformacoes();
 	void		addVar(double upperbound, double obj, string name, string type = "float", double lowerbound=0);
+	float around(float var);
 	void		changeNonzeros(int nonzeros, string name);
 	void		removeVar(string name);
 	void		removeVar(string name, bool deleteAll);
@@ -41,7 +42,7 @@ public:
 	void		setConstraintCoeffs(vector <double> coeffs, string name);
 	void		setConstraintCoeffs(const double *coeffs, int constrIndex);
 	void		setConstraintCoeffs(const double coeff, int indexConstr, int indexVar);
-	void		chgCoeff(string constrName, string varName, double coeff);
+	void		chgCoeff(string constrName, string varName, float coeff);
 	void		buildModel(string sense);
 	void        buildModel(string sense, int varMaxDisp, int varMaxDist);
 	void		setParamTimeLimit();

@@ -184,13 +184,10 @@ void ShortSolution::setEdges(vector<Edge> edges)
 void ShortSolution::calculateCostClusters()
 {
 
-
-	
-
 	sumCosts = 0.0;
 
 	for (size_t i = 0; i < numClusters; i++) {
-		costClusters[i] = dispersions[i] - externalDists[i];
+		costClusters[i] = dispersions[i] ;
 		sumCosts += costClusters[i];
 	}
 

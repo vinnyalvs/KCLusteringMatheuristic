@@ -20,6 +20,7 @@ public:
 
 	void setParams(Param p);
 	~MasterProblem();
+	float around(double var);
 private:
 	int id;
 	int solver; // if 1 use cplex, -1 use gurobi

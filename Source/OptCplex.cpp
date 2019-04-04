@@ -53,12 +53,24 @@ void CplexModel::addVar(double upperbound, double obj, string name, string type,
 	}
 	try {
 		vars.add(IloNumVar(env, lowerbound, upperbound, t, name.c_str()));
-		coeffsObj.push_back(obj);
+		coeffsObj.push_back(around((float)obj));
 		numVars++;
 	}
 	catch (IloException& ex) {
 		cerr << "Error: " << ex << endl;
 	}
+}
+
+float CplexModel::around(float var)
+{
+	// 37.66666 * 100 =3766.66 
+	// 3766.66 + .5 =37.6716    for rounding off value 
+	// then type cast to int so value is 3766 
+	// then divided by 100 so the value converted into 37.66 
+	//cout << "var: " << var << endl;
+	float value = (int)(var * 1000 + .5);
+	//cout << (float)value / 100 << endl;
+	return (float)value / 1000;
 }
 
 
@@ -200,7 +212,7 @@ void CplexModel::setConstraintCoeffs(const double coeff, int indexConstr,int ind
 
 }
 
-void CplexModel::chgCoeff(string constrName, string varName, double coeff)
+void CplexModel::chgCoeff(string constrName, string varName, float coeff)
 {
 	int varIndex;
 	//Change the coeff in a constraint.First, interate through each index of variable array and find the index we are looking for. 
@@ -232,12 +244,17 @@ void CplexModel::buildModel(string sense)
 	model.add(vars);
 	model.add(constr);
 	model.add(objective);
-	
+
 	if(sense == "maximize")
 		objective.setSense(IloObjective::Maximize);
 	else 
 		objective.setSense(IloObjective::Minimize);
+
+	cplex.setParam(IloCplex::EpGap, 1e-4);
+
+	cout << std::fixed << endl;
 	for (int i = 0; i<numVars; i++) {
+		cout << coeffsObj[i] << endl;
 		objective.setLinearCoef(vars[i], coeffsObj[i]);
 		
 	}
@@ -245,7 +262,9 @@ void CplexModel::buildModel(string sense)
 
 		
 		cout << "----------------------------------------" << endl;
+		cplex.setParam(IloCplex::EpRHS, 1e-1);
 		cplex.solve();
+		cplex.exportModel("arquivo.lp");
 
 		cout << endl;
 		cout << "Solution status: " << cplex.getStatus() << endl;
@@ -284,6 +303,7 @@ void CplexModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
 
 
 		cout << "----------------------------------------" << endl;
+		cplex.setParam(IloCplex::EpRHS, 1e-1);
 		cplex.solve();
 
 		cplex.exportModel("arquivo.lp");
