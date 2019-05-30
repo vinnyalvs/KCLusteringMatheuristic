@@ -12,6 +12,7 @@ public:
 	MasterProblem(int id,int solver,Environment *env);
 	MasterProblem();
 	void buildMasterProblem();
+	int clusteringProblem(int type);
 
 	void setEnvironment(Environment *env);
 	void setSolutions(vector <ShortSolution*> solutions);

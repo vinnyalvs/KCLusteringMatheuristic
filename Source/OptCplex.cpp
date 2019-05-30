@@ -88,8 +88,9 @@ void CplexModel::addConstraint(double rightSide, string type, string name, doubl
 	}
 }
 
-void CplexModel::addConstraint(double coeff, int rhsVarId, int lhsVarId , string type, string name, double lowerbound) {
+void CplexModel::addConstraint(float coeff, int rhsVarId, int lhsVarId , string type, string name, double lowerbound) {
 	try {
+		
 		model.add(coeff * vars[lhsVarId] - vars[rhsVarId] <= 0 );
 		numConstraints++;
 	}
@@ -97,6 +98,7 @@ void CplexModel::addConstraint(double coeff, int rhsVarId, int lhsVarId , string
 		cerr << "Error: " << ex << endl;
 	}
 }
+
 
 
 
@@ -212,7 +214,7 @@ void CplexModel::setConstraintCoeffs(const double coeff, int indexConstr,int ind
 
 }
 
-void CplexModel::chgCoeff(string constrName, string varName, float coeff)
+/*void CplexModel::chgCoeff(string constrName, string varName, float coeff)
 {
 	int varIndex;
 	//Change the coeff in a constraint.First, interate through each index of variable array and find the index we are looking for. 
@@ -235,7 +237,7 @@ void CplexModel::chgCoeff(string constrName, string varName, float coeff)
 		cerr << "Error: " << ex << endl;
 	}
 	
-}
+}*/
 
 void CplexModel::buildModel(string sense)
 {
@@ -395,9 +397,9 @@ void CplexModel::printVarsInSol()
 
 }
 
-vector<double> CplexModel::getVarsInSol()
+vector<int> CplexModel::getVarsInSol()
 {
-	vector <double> values;
+	vector <int> values;
 	for (int i = 0; i < vars.getSize(); i++) {
 
 		if (cplex.getValue(vars[i]) != 0) {
@@ -409,6 +411,31 @@ vector<double> CplexModel::getVarsInSol()
 
 		
 	}
+	model.end();
+	env.end();
+	cplex.end();
+	return values;
+
+}
+
+vector<int> CplexModel::getVarsInSol(double * assd)
+{
+
+	vector <int> values;
+	for (int i = 0; i < vars.getSize(); i++) {
+
+		if (cplex.getValue(vars[i]) != 0) {
+			assd[i] = cplex.getValue(vars[i]);
+			values.push_back(i);
+		//	cout << i << " " << cplex.getValue(vars[i]) << endl;
+
+		}
+
+
+	}
+	model.end();
+	env.end();
+	cplex.end();
 	return values;
 
 }

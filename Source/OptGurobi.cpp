@@ -137,7 +137,7 @@ void GurobiModel::addConstraint(double rightSide, string sense, string name, dou
 }
 
 
-void GurobiModel::addConstraint(double coeff,int rhsVarId, int lhsVarId, string sense, string name, double lowerbound) {
+void GurobiModel::addConstraint(float coeff,int rhsVarId, int lhsVarId, string sense, string name, double lowerbound) {
 
 	try {
 		char s;
@@ -485,10 +485,21 @@ void GurobiModel::printVarsInSol()
 
 }
 
-vector<double> GurobiModel::getVarsInSol()
+vector<int> GurobiModel::getVarsInSol()
 {
 	GRBVar *vars = model->getVars();
-	vector <double> values;
+	vector <int> values;
+	for (int i = 0; i < model->get(GRB_IntAttr_NumVars); i++) {
+		if (vars[i].get(GRB_DoubleAttr_X) != 0) {
+			values.push_back(i);
+		}
+	}
+	return values;
+}
+vector<int> GurobiModel::getVarsInSol(double *v)
+{
+	GRBVar *vars = model->getVars();
+	vector <int> values;
 	for (int i = 0; i < model->get(GRB_IntAttr_NumVars); i++) {
 		if (vars[i].get(GRB_DoubleAttr_X) != 0) {
 			values.push_back(i);

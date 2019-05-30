@@ -92,7 +92,7 @@ public:
 	 @return none
 	 */
 
-	 virtual void chgCoeff(string constrName, string varName, double coeff) = 0;
+	// virtual void chgCoeff(string constrName, string varName, double coeff) = 0;
 	 /**
 	 add a Constraint to the Model, constraints are build using Ranges
 	 @param double lowerbound Constraint lower bound (default = 0)
@@ -107,7 +107,7 @@ public:
 	 @param none
 	 @return int numConstraints, the number of constraints in model
 	 */
-	 virtual void addConstraint(double coeff, int rhsVarId, int lhsVarId, string type, string name, double lowerbound) = 0;
+	 virtual void addConstraint(float coeff, int rhsVarId, int lhsVarId, string type, string name, double lowerbound) = 0;
 	 virtual int getNumConstraints() = 0;
 	 /**
 	 remove a constraint which name is given
@@ -208,7 +208,9 @@ public:
 	virtual void  buildModel(string sense, int varMaxDisp, int varMaxDist) = 0;
 
 
-	virtual vector<double> getVarsInSol() = 0;
+	virtual vector<int> getVarsInSol() = 0;
+
+	virtual vector<int> getVarsInSol(double *values)=0;
 
 
  };

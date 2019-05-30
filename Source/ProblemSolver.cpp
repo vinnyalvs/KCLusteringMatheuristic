@@ -71,7 +71,7 @@ void ProblemSolver::solveProblem()
 	// build Master Problem
 	//mProblem.setEnvironment(env);
 	mProblem.setSolutions(solutions);
-	mProblem.buildMasterProblem();
+	int a = mProblem.clusteringProblem(1);
 
 
 	const int numClusters = solutions[0]->getNumClusters();

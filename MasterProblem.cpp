@@ -134,20 +134,6 @@ void MasterProblem::buildMasterProblem() {
 	int solution;
 	int clusterSol;
 
-	for (int a = 1; a <x.size(); a++) {
-<<<<<<< HEAD
-		if (x[a]  % numClusters == 0)
-			solution = floor((x[a]) / numClusters) - 1;
-		else
-			solution = floor((x[a]) / numClusters);
-		clusterSol = (x[a]) - ((solution)* numClusters) - 1;
-=======
-		solution = floor( (x[a]) / numClusters);
-		clusterSol = (x[a]) - ((solution)* numClusters);
->>>>>>> c890a40ff3f7eb48f2fc8803b22a39c2ce951ecd
-		vector <vector<int>> clusters = solutions[solution]->getClusters();
-		clustersExactMethod.push_back(clusters[clusterSol]);
-	}
 
 
 	/*for (int a = 0; a <x.size(); a++) {

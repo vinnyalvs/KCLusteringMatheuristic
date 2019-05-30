@@ -32,7 +32,7 @@ public:
 	void	addConstraint(double rightSide, string sense, string name, double lowerbound=0);
 	void    addConstraint(int numVar, string sense, string name, double lb);
 	void    addConstraint(int rhsVarId, int lhsVarId, string sense, string name, double lowerbound);
-	void    addConstraint(double coeff, int rhsVarId, int lhsVarId, string sense, string name, double lowerbound);
+	void    addConstraint(float coeff, int rhsVarId, int lhsVarId, string sense, string name, double lowerbound);
 	void    updateModel();
 	void	removeConstraint(string name);
 	int		getNumConstraints();
@@ -54,7 +54,8 @@ public:
 	void	setParamVarSel();
 	void    setParamVarSel(int value);
 	void	printVarsInSol();
-	vector<double> getVarsInSol();
+	vector<int> getVarsInSol();
+	vector<int> getVarsInSol(double *values);
 	
 	bool    modelNeedUpdate;
 };

@@ -32,7 +32,7 @@ public:
 	void		removeVar(string name);
 	void		removeVar(string name, bool deleteAll);
 	void		addConstraint(double rightSide, string type, string name, double lowerbound=0);
-	void        addConstraint(double coeff, int rhsVarId, int lhsVarId, string type, string name, double lowerbound);
+	void        addConstraint(float coeff, int rhsVarId, int lhsVarId, string type, string name, double lowerbound);
 	void        addConstraint(int rhsVarId, int lhsVarId, string type, string name, double lowerbound);
 	void		removeConstraint(string name);
 	void		removeConstraint(string name,bool deleteAll);
@@ -42,7 +42,7 @@ public:
 	void		setConstraintCoeffs(vector <double> coeffs, string name);
 	void		setConstraintCoeffs(const double *coeffs, int constrIndex);
 	void		setConstraintCoeffs(const double coeff, int indexConstr, int indexVar);
-	void		chgCoeff(string constrName, string varName, float coeff);
+//	void		chgCoeff(string constrName, string varName, float coeff);
 	void		buildModel(string sense);
 	void        buildModel(string sense, int varMaxDisp, int varMaxDist);
 	void		setParamTimeLimit();
@@ -55,7 +55,8 @@ public:
 	void		setParamVarSel();
 	void		setParamVarSel(int value);
 	void		printVarsInSol();
-	vector <double> getVarsInSol();
+	vector <int> getVarsInSol();
+	vector<int> getVarsInSol(double *values);
 
 
 
