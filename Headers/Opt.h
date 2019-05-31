@@ -71,6 +71,7 @@ public:
 	 @param  const double *coeffs Array of coefficients, its a linearized matrix
 	 @return none
 	 */
+	 virtual void removeVar(int index) = 0;
 	 virtual void setAllVarsConstraintCoeffs(const double *coeffs) = 0;
 	 /** Set the Coefficients of Variables in one Constraint
 		 @param  const double *coeffs Array of coefficients, including zeros
@@ -120,6 +121,7 @@ public:
 	 @param none
 	 @return int numVars, the number of vars in model
 	 */
+	 virtual void removeConstraint(int index) = 0;
 	 virtual int getNumVars() = 0;
 	 /**
 	 Build Model, setting the objective expression, and then Solving the model.
@@ -210,7 +212,9 @@ public:
 
 	virtual vector<int> getVarsInSol() = 0;
 
-	virtual vector<int> getVarsInSol(double *values)=0;
+	virtual vector<int> getVarsInSol(double *auxValues)=0;
+
+
 
 
  };

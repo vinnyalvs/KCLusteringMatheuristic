@@ -106,6 +106,10 @@ void GurobiModel::removeVar(string name)
 	}
 }
 
+void GurobiModel::removeVar(int index)
+{
+}
+
 void GurobiModel::addConstraint(double rightSide, string sense, string name, double lowerbound)
 {
 
@@ -173,6 +177,20 @@ void GurobiModel::removeConstraint(string name)
 {
 	try {
 		GRBConstr constr = model->getConstrByName(name);
+		numConstraints--;
+		model->remove(constr);
+		model->update();
+	}
+	catch (GRBException e) {
+		cout << "Error code = " << e.getErrorCode() << endl;
+		cout << e.getMessage() << endl;
+	}
+}
+
+void GurobiModel::removeConstraint(int index)
+{
+	try {
+		GRBConstr constr = model->getConstr(index);
 		numConstraints--;
 		model->remove(constr);
 		model->update();

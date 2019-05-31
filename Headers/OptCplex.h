@@ -18,6 +18,7 @@ private:
 	int				nonzeros;
 	IloNumVarArray  vars;
 	IloObjective	objective;
+	IloObjective *obj;
 	IloRangeArray	constr;
 	IloConstraintArray constr2;
 	vector <float>	coeffsObj;
@@ -30,11 +31,13 @@ public:
 	float around(float var);
 	void		changeNonzeros(int nonzeros, string name);
 	void		removeVar(string name);
+	void	    removeVar(int index);
 	void		removeVar(string name, bool deleteAll);
 	void		addConstraint(double rightSide, string type, string name, double lowerbound=0);
 	void        addConstraint(float coeff, int rhsVarId, int lhsVarId, string type, string name, double lowerbound);
 	void        addConstraint(int rhsVarId, int lhsVarId, string type, string name, double lowerbound);
 	void		removeConstraint(string name);
+	void		removeConstraint(int index);
 	void		removeConstraint(string name,bool deleteAll);
 	int			getNumConstraints();
 	int			getNumVars();
@@ -45,6 +48,7 @@ public:
 //	void		chgCoeff(string constrName, string varName, float coeff);
 	void		buildModel(string sense);
 	void        buildModel(string sense, int varMaxDisp, int varMaxDist);
+
 	void		setParamTimeLimit();
 	void		setParamTimeLimit(double time);
 	void		setParamTolerance();
@@ -56,7 +60,7 @@ public:
 	void		setParamVarSel(int value);
 	void		printVarsInSol();
 	vector <int> getVarsInSol();
-	vector<int> getVarsInSol(double *values);
+	vector<int> getVarsInSol(double *auxValues);
 
 
 

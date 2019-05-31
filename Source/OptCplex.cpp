@@ -106,6 +106,10 @@ void CplexModel::removeConstraint(string name)
 {
 	removeConstraint(name, false);
 }
+void CplexModel::removeConstraint(int index)
+{
+	constr[index].end();
+}
 /**
 Remove a constraint from the model
 @param  string name Name of the constraint to be removed
@@ -126,6 +130,14 @@ void CplexModel::removeConstraint(string name, bool deleteAll)
 void CplexModel::removeVar(string name)
 {
 	removeVar(name, false);
+}
+
+void CplexModel::removeVar(int index)
+{
+	//vars[index].end();
+	numVars--;
+	model.remove(vars[index]);
+
 }
 
 /**
@@ -155,7 +167,9 @@ int CplexModel::getNumConstraints()
 
 int CplexModel::getNumVars()
 {
-	return numVars;
+	//return numVars;
+	return vars.getSize();
+
 }
 
 
@@ -271,6 +285,7 @@ void CplexModel::buildModel(string sense)
 		cout << endl;
 		cout << "Solution status: " << cplex.getStatus() << endl;
 		cout << "Value: " << cplex.getObjValue() << endl;
+		model.remove(objective);
 		cout << endl;
 		cout << "----------------------------------------" << endl;
 	}
@@ -286,7 +301,7 @@ void CplexModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
 {
 	//
 
-	IloObjective *obj;
+
 	//obj.setExpr(vars[varMaxDisp] + vars[varMaxDist]);
 //	obj = new IloObjective(env, vars[varMaxDisp] * vars[varMaxDist], IloObjective::Minimize);
 	//obj.setSense(IloObjective::Minimize);
@@ -300,7 +315,7 @@ void CplexModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
 //	model.add(objective);
 	model.add(*obj);
 	
-
+	
 	try {
 
 
@@ -314,6 +329,8 @@ void CplexModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
 		cout << "Solution status: " << cplex.getStatus() << endl;
 		cout << "Value: " << cplex.getObjValue() << endl;
 		cout << endl;
+
+
 		cout << "----------------------------------------" << endl;
 	}
 	catch (IloException& ex) {
@@ -433,9 +450,12 @@ vector<int> CplexModel::getVarsInSol(double * assd)
 
 
 	}
-	model.end();
-	env.end();
-	cplex.end();
+//	model.end();
+	//env.end();
+//	cplex.end();
+	model.remove(vars);
+	model.remove(*obj);
+	model.remove(constr);
 	return values;
 
 }

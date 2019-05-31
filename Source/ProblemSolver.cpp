@@ -72,7 +72,7 @@ void ProblemSolver::solveProblem()
 	//mProblem.setEnvironment(env);
 	mProblem.setSolutions(solutions);
 	int a = mProblem.clusteringProblem(1);
-
+//	mProblem.buildMasterProblem();
 
 	const int numClusters = solutions[0]->getNumClusters();
 	int numObjs = solutions[0]->getNumObjs();

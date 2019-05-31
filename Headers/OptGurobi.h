@@ -29,12 +29,14 @@ public:
 	void	addVar(double upperbound, double obj, string name, string type="float", double lowerbound = 0);
 	void	changeNonzeros(int nonzeros, string name);
 	void	removeVar(string name);
+	void	removeVar(int index);
 	void	addConstraint(double rightSide, string sense, string name, double lowerbound=0);
 	void    addConstraint(int numVar, string sense, string name, double lb);
 	void    addConstraint(int rhsVarId, int lhsVarId, string sense, string name, double lowerbound);
 	void    addConstraint(float coeff, int rhsVarId, int lhsVarId, string sense, string name, double lowerbound);
 	void    updateModel();
 	void	removeConstraint(string name);
+	void	removeConstraint(int index);
 	int		getNumConstraints();
 	int		getNumVars();
 	void	setAllVarsConstraintCoeffs(const double *coeffs);
@@ -55,7 +57,7 @@ public:
 	void    setParamVarSel(int value);
 	void	printVarsInSol();
 	vector<int> getVarsInSol();
-	vector<int> getVarsInSol(double *values);
+	vector<int> getVarsInSol(double *auxValues);
 	
 	bool    modelNeedUpdate;
 };

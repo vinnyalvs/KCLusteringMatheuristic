@@ -97,7 +97,8 @@ void MasterProblem::buildMasterProblem() {
 	//model->buildModel("minimize",varMaxDisp,varMaxDist);
 	model->buildModel("minimize", varMaxDisp, 0);
 
-	vector <int> x = model->getVarsInSol();
+	double *ptr = new double[4];
+	vector <int> x = model->getVarsInSol(ptr);
 
 
 	
@@ -165,6 +166,7 @@ int MasterProblem::clusteringProblem(int type)
 	double maxDisp = numeric_limits<double>::min();
 	const int numConstr = model->getNumConstraints();
 
+	int auxVars=0;
 
 	if (type == 1) {
 		model->addVar(100, 1, "maxDisp", "double", 0);
@@ -193,7 +195,7 @@ int MasterProblem::clusteringProblem(int type)
 				int indVar = model->getNumVars() - 1;
 				model->addConstraint(dispersions[j], varMaxDisp, indVar, "<=", "cluster" + std::to_string(i + j) + "maxDisp", 0);
 				//model->addConstraint(1/extDists[j], varMaxDist, indVar, "<=", "cluster" + std::to_string(i + j) + "maxDist", 0);
-
+				auxVars++;
 
 				for (int k = 0; k < clusters[j].size(); k++) {
 					int indCnstr = clusters[j][k];
@@ -216,21 +218,54 @@ int MasterProblem::clusteringProblem(int type)
 
 		double *assd = new double[4];
 		vector <int> x = model->getVarsInSol(assd);
-		cout << assd[0] << endl;
 		int solution;
 		int clusterSol;
 
 
-		
 
-		for (int a = 1; a <x.size(); a++) {
-			if (x[a] % numClusters == 0)
-				solution = floor((x[a]) / numClusters) - 1;
-			else
-				solution = floor((x[a]) / numClusters);
-			clusterSol = (x[a]) - ((solution)* numClusters) - 1;
-			vector <vector<int>> clusters = solutions[solution]->getClusters();
-			clustersExactMethod.push_back(clusters[clusterSol]);
+
+		//model->removeVar("maxDisp");
+		cout << model->getNumVars() << endl;
+		model->removeVar(varMaxDisp);
+		cout << model->getNumVars() << endl;
+		model->addVar(assd[0] + 0.5, 1, "maxDisp", "double", assd[0] - 0.5);
+		varMaxDisp = model->getNumVars() - 1;
+		model->addVar(100, 1, "maxDist", "double", 0);
+		int varMaxDist = model->getNumVars() - 1;
+
+
+	
+
+		for (int i = 0; i < solutions.size(); i++) {
+
+			//cout << i << endl;
+			vector <double> costs = solutions[i]->getCostClusters();
+			vector <vector<int>> clusters = solutions[i]->getClusters();
+			vector <double> dispersions = solutions[i]->dispersions;
+			vector <double> extDists = solutions[i]->externalDists;
+
+
+			for (int j = 0; j < auxVars; j++) {
+		//		model->addVar(1, 0, "cluster" + std::to_string(model->getNumVars()), "int", 0);
+				model->addVar(1, 0, "cluster" + std::to_string(model->getNumVars()), "int", 0);
+				int indVar = model->getNumVars() - 1;
+				model->addConstraint(dispersions[j], varMaxDisp, indVar, "<=", "cluster" + std::to_string(i + j) + "maxDisp", 0);
+				model->addConstraint(1 / extDists[j], varMaxDist, indVar, "<=", "cluster" + std::to_string(i + j) + "maxDist", 0);
+				
+
+				for (int k = 0; k < clusters[j].size(); k++) {
+					int indCnstr = clusters[j][k];
+					model->setConstraintCoeffs(1, indCnstr, indVar);
+				}
+
+				if (param.fixedNumClusters)
+					model->setConstraintCoeffs(1, indCnstNumClusters, indVar);
+			}
+
+			model->buildModel("minimize", 0, varMaxDist);
+
+			x = model->getVarsInSol();
+
 		}
 
 
