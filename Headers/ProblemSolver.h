@@ -18,6 +18,8 @@ private:
 
 	vector <vector <int>> clusters;
 
+
+
 public:
 	ProblemSolver(int solver);
 	void setEnvironment(Environment *env);
@@ -29,6 +31,7 @@ public:
 	int getBestSolutionId();
 	void setParams(Param p);
 	void solveProblem();
+
 
 
 

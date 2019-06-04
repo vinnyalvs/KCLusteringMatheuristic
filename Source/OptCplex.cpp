@@ -90,7 +90,7 @@ void CplexModel::addConstraint(double rightSide, string type, string name, doubl
 
 void CplexModel::addConstraint(float coeff, int rhsVarId, int lhsVarId , string type, string name, double lowerbound) {
 	try {
-		
+
 		model.add(coeff * vars[lhsVarId] - vars[rhsVarId] <= 0 );
 		numConstraints++;
 	}
@@ -134,9 +134,15 @@ void CplexModel::removeVar(string name)
 
 void CplexModel::removeVar(int index)
 {
+	
+	cplex.clear();
 	//vars[index].end();
 	numVars--;
-	model.remove(vars[index]);
+	cout << vars.getSize() << endl;
+	vars[index].end();
+	cout << vars.getSize() << endl;
+	obj->end();
+	
 
 }
 
@@ -150,7 +156,9 @@ Remove a variable from the model
 void CplexModel::removeVar(string name,bool deleteAll)
 {
 	for (int i = 0; i < numVars; i++) {
+		cout << vars[i].getName() << endl;
 		if (vars[i].getName() == name.c_str()) {
+			cout << "entrou" << endl;
 			vars[i].end();
 			numVars--;
 			if (!deleteAll)
@@ -430,6 +438,7 @@ vector<int> CplexModel::getVarsInSol()
 	}
 	model.end();
 	env.end();
+	obj->end();
 	cplex.end();
 	return values;
 
@@ -439,11 +448,13 @@ vector<int> CplexModel::getVarsInSol(double * assd)
 {
 
 	vector <int> values;
+	int count=0;
 	for (int i = 0; i < vars.getSize(); i++) {
 
 		if (cplex.getValue(vars[i]) != 0) {
-			assd[i] = cplex.getValue(vars[i]);
+			assd[count] = cplex.getValue(vars[i]);
 			values.push_back(i);
+			count++;
 		//	cout << i << " " << cplex.getValue(vars[i]) << endl;
 
 		}
@@ -453,9 +464,9 @@ vector<int> CplexModel::getVarsInSol(double * assd)
 //	model.end();
 	//env.end();
 //	cplex.end();
-	model.remove(vars);
-	model.remove(*obj);
-	model.remove(constr);
+//	model.remove(vars);
+//	model.remove(*obj);
+//	model.remove(constr);
 	return values;
 
 }
