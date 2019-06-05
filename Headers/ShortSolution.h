@@ -103,6 +103,7 @@ public:
 
 	
 
+	void calcMeans();
 
 	vector <vector<int>> clusters;
     vector <int> objectByCluster; // for each object i have the clusters which it belongs
@@ -138,6 +139,8 @@ public:
 	vector <double> externalDists;
 	vector <double> dispersions;
 	vector <double> costClusters;
+	int numClusters;
+	int numObj;
 private:
 
 
@@ -147,9 +150,9 @@ private:
 
 
 
-	int numObj;
 
-	int numClusters;
+
+
 
 
 	vector <Object*> *objects;

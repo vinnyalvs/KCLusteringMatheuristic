@@ -19,6 +19,8 @@ public:
 
 	void readObjectInstances();
 
+	void readThiagoSolutions(string folderPath, int numFiles);
+
 	void normEntry();
 
 	void readNormEntry();

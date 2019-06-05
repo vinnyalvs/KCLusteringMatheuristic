@@ -71,23 +71,22 @@ void ProblemSolver::solveProblem()
 	// build Master Problem
 	//mProblem.setEnvironment(env);
 	mProblem.setSolutions(solutions);
-	int a = mProblem.clusteringProblem(1);
+	mProblem.setParams(p);
+	int numClusters = mProblem.clusteringProblem(1);
 //	mProblem.buildMasterProblem();
-
-	const int numClusters = solutions[0]->getNumClusters();
 	int numObjs = solutions[0]->getNumObjs();
 
-	objByCluster.assign(numObjs, 0);
+	//objByCluster.assign(numObjs, 0);
 	
 	clusters = mProblem.getClusters();
 
-	for (int i = 0; i < clusters.size(); i++) {
+	/*for (int i = 0; i < clusters.size(); i++) {
 		for (int j = 0; j < clusters[i].size(); j++) {
 			objByCluster[clusters[i][j] - 1] = i;
 		}
-	}
+	}*/
 
-	cout << "a" << endl;
+	cout << "Fim Problem Solver" << endl;
 
 	//Column Generation
 

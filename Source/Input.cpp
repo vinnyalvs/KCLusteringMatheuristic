@@ -92,7 +92,6 @@ void Input::readObjectInstances()
 	double x, y;
 	int ix, iy;
 	vector <Object*> *objects = new vector <Object*>;
-	vector <Object> *test = new vector <Object>;
 	vector <double> attrs;
 	int i = 0;
 	f.open(file);
@@ -100,8 +99,6 @@ void Input::readObjectInstances()
 		f >> m;
 		f >> comma;
 		f >> n;
-		for (int j = 0; j < m; j++)
-			test->push_back(Object(j + 1));
 		for (int j = 0; j < m; j++)
 			objects->push_back(new Object(j + 1));
 		
@@ -112,8 +109,6 @@ void Input::readObjectInstances()
 				f >> x;
 				f >> comma;
 				f >> y;
-				test->at(index - 1).addNewDoubleOrigAttr(x);
-				test->at(index - 1).addNewDoubleOrigAttr(y);
 				objects->at(index - 1)->addNewDoubleOrigAttr(x);
 				objects->at(index - 1)->addNewDoubleOrigAttr(y);
 			}
@@ -133,6 +128,11 @@ void Input::readObjectInstances()
 	}
 	f.close();
 	this->objects = objects;
+}
+
+void Input::readThiagoSolutions(string folderPath, int numFiles)
+{
+	
 }
 
 void Input::normEntry()

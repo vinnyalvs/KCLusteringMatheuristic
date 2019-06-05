@@ -539,6 +539,34 @@ int ShortSolution::findNearestMean(struct mean m1, vector <struct mean> *m2) {
 	return index;
 }
 
+void ShortSolution::calcMeans()
+{
+	int count = 0;
+	double media=0, mediaN=0;
+	for (int i = 0; i < numClusters; i++) {
+		mean m;
+		m.id = i;
+		for (int k = 0; k < numAttr; k++)
+			m.attrs.push_back(0);
+		means.push_back(m);
+	}
+
+	for (int n = 0; n < numAttr; n++) {
+		for (int i = 0; i < numClusters; i++) {
+			media = 0;
+			for (int k = 0; k < clusters[i].size(); k++) {
+				int id = clusters[i][k];
+				media += objects->at(id - 1)->getNormDoubleAttr(n);
+			}
+			mediaN = media / clusters[i].size();
+			means[i].attrs[n] = mediaN;
+		}
+	}
+
+	
+
+}
+
 void ShortSolution::tradeCluster(int id, int orgMean)
 {
 	//Removendo obj do cluster original
