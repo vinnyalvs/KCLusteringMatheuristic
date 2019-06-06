@@ -331,7 +331,7 @@ void CplexModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
 		cplex.setParam(IloCplex::EpRHS, 1e-1);
 		cplex.solve();
 
-		cplex.exportModel("arquivo.lp");
+		cplex.exportModel("../arquivo.lp");
 
 		cout << endl;
 		cout << "Solution status: " << cplex.getStatus() << endl;
@@ -446,21 +446,24 @@ vector<int> CplexModel::getVarsInSol()
 
 vector<int> CplexModel::getVarsInSol(double * assd)
 {
-
+//	system("cls");
+	cout << endl;
 	vector <int> values;
 	int count=0;
 	for (int i = 0; i < vars.getSize(); i++) {
 
 		if (cplex.getValue(vars[i]) != 0) {
+		//	cout << i << endl;
 			assd[count] = cplex.getValue(vars[i]);
 			values.push_back(i);
 			count++;
-		//	cout << i << " " << cplex.getValue(vars[i]) << endl;
+			//cout << i << " " << cplex.getValue(vars[i]) << endl;
 
 		}
 
 
 	}
+	cout << "D" << vars.getSize() << endl;
 //	model.end();
 	//env.end();
 //	cplex.end();

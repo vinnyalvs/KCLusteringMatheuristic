@@ -684,6 +684,7 @@ bool ShortSolution::checkViability() {
 		if (c.empty())
 			return false;
 	}
+	cout << num << endl;
 	if (num != numObj) {
 		return false;
 	}
