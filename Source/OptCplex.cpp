@@ -283,8 +283,6 @@ void CplexModel::buildModel(string sense)
 		
 	}
 	try {
-
-		
 		cout << "----------------------------------------" << endl;
 		cplex.setParam(IloCplex::EpRHS, 1e-1);
 		cplex.solve();
@@ -305,40 +303,31 @@ void CplexModel::buildModel(string sense)
 
 
 
-void CplexModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
+void CplexModel::buildModel(string sense, int varLeftSide, int varRightSide)
 {
-	//
-
-
-	//obj.setExpr(vars[varMaxDisp] + vars[varMaxDist]);
-//	obj = new IloObjective(env, vars[varMaxDisp] * vars[varMaxDist], IloObjective::Minimize);
-	//obj.setSense(IloObjective::Minimize);
+	if (sense.compare("1")) {
+		cout << sense << endl;
+		obj = new IloObjective(env, vars[varLeftSide], IloObjective::Minimize);
+	}
+	else if (sense.compare("2")) {
+		cout << sense << endl;
+		obj = new IloObjective(env, vars[varLeftSide] * vars[varRightSide], IloObjective::Minimize);
+		//obj->setExpr(vars[varLeftSide] + vars[varRightSide]);
+	}
 	
-	
-	obj = new IloObjective(env, vars[varMaxDisp], IloObjective::Minimize);
-
 	model.add(vars);
 	model.add(constr);
 	//cplex.setParam(IloCplex::Param::SolutionType, 2);
-//	model.add(objective);
 	model.add(*obj);
-	
-	
 	try {
-
-
 		cout << "----------------------------------------" << endl;
 		cplex.setParam(IloCplex::EpRHS, 1e-1);
 		cplex.solve();
-
 		cplex.exportModel("../arquivo.lp");
-
 		cout << endl;
 		cout << "Solution status: " << cplex.getStatus() << endl;
 		cout << "Value: " << cplex.getObjValue() << endl;
 		cout << endl;
-
-
 		cout << "----------------------------------------" << endl;
 	}
 	catch (IloException& ex) {
@@ -349,7 +338,7 @@ void CplexModel::buildModel(string sense, int varMaxDisp, int varMaxDist)
 
 void CplexModel::setParamTimeLimit()
 {
-	setParamTimeLimit(100);
+	setParamTimeLimit(1000);
 }
 
 void CplexModel::setParamTimeLimit(double time)
@@ -444,26 +433,22 @@ vector<int> CplexModel::getVarsInSol()
 
 }
 
-vector<int> CplexModel::getVarsInSol(double * assd)
+vector<int> CplexModel::getVarsInSol(double *auxV)
 {
 //	system("cls");
 	cout << endl;
 	vector <int> values;
 	int count=0;
 	for (int i = 0; i < vars.getSize(); i++) {
-
 		if (cplex.getValue(vars[i]) != 0) {
-		//	cout << i << endl;
-			assd[count] = cplex.getValue(vars[i]);
+			if(i<2)
+				auxV[count] = cplex.getValue(vars[i]);
 			values.push_back(i);
 			count++;
-			//cout << i << " " << cplex.getValue(vars[i]) << endl;
-
 		}
 
-
 	}
-	cout << "D" << vars.getSize() << endl;
+	cout << "Quantidade de Variaveis na Solucao " << vars.getSize() << endl;
 //	model.end();
 	//env.end();
 //	cplex.end();
